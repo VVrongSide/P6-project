@@ -30,7 +30,7 @@ uint8_t secretKey[8];
 uint16_t sequenceNumber = 1;      // the receiver expects a sequence number greater than 0
 uint16_t deviceAddress = 0x2B8;
 
-bool test = true;
+bool test = false;
 
 ///////////////////////////////////////////////
 // Functions
@@ -47,8 +47,6 @@ void setup() {
       while (1);
     }
   }
-  Serial.print("secret key");
-  Serial.print(yoo.id[0]);
 
 	// set coding rate
   LoRa.setCodingRate4(5);
@@ -83,10 +81,9 @@ void loop() {
 }
 
 bool waited(int interval) {
-  Serial.println("oh boi");
-  static int currentTime = millis();
-  int prevTime = 0;
-  if (prevTime + interval >= currentTime) {
+  static unsigned long prevTime = 0;
+  unsigned long currentTime = millis();
+  if (interval <= currentTime - prevTime) {
     prevTime = currentTime;
     return true;
   }
@@ -115,7 +112,7 @@ void transmitMessage(bool firstNonce) {
     mic = getMIC(payload, secretKey);
   }
 
-	LoRa.beginPacket(1);							// beginPacket(implicitHeader = 1)
+	LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
 	LoRa.write(header_b1);
 	LoRa.write(header_b2);
 	LoRa.write(header_b3);
