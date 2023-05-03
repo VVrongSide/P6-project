@@ -29,7 +29,6 @@ uint8_t secretKey[8];
 
 uint16_t sequenceNumber = 1;      // the receiver expects a sequence number greater than 0
 uint16_t deviceAddress = 0x2B8;
-uint16_t counter = 0;					    // for SPECK-CTR
 
 bool test = true;
 
@@ -37,8 +36,9 @@ bool test = true;
 // Functions
 
 void setup() {
+	
 	Serial.begin(115200);
-
+  
 	Serial.println("LoRaCCP v1");
 
   if (!test) {
@@ -47,6 +47,8 @@ void setup() {
       while (1);
     }
   }
+  Serial.print("secret key");
+  Serial.print(yoo.id[0]);
 
 	// set coding rate
   LoRa.setCodingRate4(5);
@@ -166,9 +168,8 @@ uint32_t getMsgKey() {
 	uint32_t secretkeyword[0];
 	uint32_t roundkey[22];
 
-	getAddressCounter(plaintext);                             // DeviceAddress + Counter (uint8 array of length 4)
+	getAddressSeqNum(plaintext);                             // DeviceAddress + SequenceNumber (uint8 array of length 4)
 	ConvertBW32(plaintext,plaintextword, 4);                  // input: uint8 array of length 4 // output: uint32 array of length 1
-	ConvertBW32(secretKey,secretkeyword, 8);                  // input: uint8 array of length 8 // output: uint32 array of length 2
 	Expand64(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
 	Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
 	ConvertW32B(ciphertextword, ciphertext, 4);
@@ -179,11 +180,11 @@ uint32_t getMsgKey() {
 	return msgKey;
 }
 
-uint64_t deriveSecretKey(uint8_t nonce[]) {
+void deriveSecretKey(uint8_t nonce[]) {
 
   uint32_t nonceword[2];
   uint8_t ciphertext[8];
-  uint32_t ciphertextword[4];
+  uint32_t ciphertextword[2];
   
   uint32_t rootKeyWord[4];
   uint32_t roundkey[27];
@@ -194,29 +195,31 @@ uint64_t deriveSecretKey(uint8_t nonce[]) {
   Block64Encrypt(nonceword, ciphertextword, roundkey);
   ConvertW32B(ciphertextword, ciphertext, 8);
 
-  uint32_t sKey = ((uint32_t)ciphertext[0] << 56) | ((uint32_t)ciphertext[1] << 48) | 
+  /*uint32_t sKey = ((uint32_t)ciphertext[0] << 56) | ((uint32_t)ciphertext[1] << 48) | 
                   ((uint32_t)ciphertext[2] << 40) | ((uint32_t)ciphertext[3] << 32) |
                   ((uint32_t)ciphertext[4] << 24) | ((uint32_t)ciphertext[5] << 16) | 
-                  ((uint32_t)ciphertext[6] << 8) | (uint32_t)ciphertext[7];
-  Serial.print("Secret key derived: ");
-  Serial.println(sKey);
-  return sKey;
+                  ((uint32_t)ciphertext[6] << 8) | (uint32_t)ciphertext[7];*/
+
+  for (int i = 0; i < 8; i++) {
+    secretKey[i] = ciphertext[i];
+  }
 }
 
-// returns device address and counter - used as plaintext in SPECK
-void getAddressCounter(uint8_t plaintext[]) {
-  uint32_t plaintext32 = (uint32_t)(deviceAddress << 20) | (uint32_t)counter;
+// returns device address and sequence number - used as plaintext in SPECK
+void getAddressSeqNum(uint8_t plaintext[]) {
+  uint32_t plaintext32 = (uint32_t)(deviceAddress << 20) | (uint32_t)sequenceNumber;
   for (int i = 0; i < 4; i++) {
     plaintext[i] = (uint8_t)(plaintext32 >> 8*i);
   }
-  counter++;
 }
 
 /*********************************************************/
 /************************* SPECK *************************/
 /*********************************************************/
 
-/*************** Word/byte conversion ***************/
+
+///////////////////////////////////////////////
+// Word/byte conversion
 
 void ConvertBW32(uint8_t bytes[], uint32_t words[], int wordcount) {
   int i, j = 0;
@@ -238,8 +241,8 @@ void ConvertW32B(uint32_t words[], uint8_t bytes[], int wordcount) {
   }
 }
 
-
-/*************** Key Schedule ***************/
+///////////////////////////////////////////////
+// Key Schedule
 
 void Expand64(uint32_t K[], uint32_t roundkey[]) {
   uint32_t i, D=K[3], C=K[2], B=K[1], A=K[0];
@@ -265,7 +268,8 @@ void Expand128(uint32_t K[], uint32_t roundkey[]) {
 	}
 }
 
-/*************** Encrypt ***************/
+///////////////////////////////////////////////
+// Encrypt
 
 void Block32Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundkey[]) {
   uint16_t i;
