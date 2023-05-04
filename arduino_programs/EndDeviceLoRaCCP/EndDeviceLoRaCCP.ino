@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////
 // Defines
 
+#define BUTTON_PIN 4
+
 #define ROTL16(word, offset) (((word)<<(offset)) | (word>>(16-(offset))))
 #define ROTR16(word, offset) (((word)>>(offset)) | ((word)<<(16-(offset))))
 #define ROTL32(word, offset) (((word)<<(offset)) | (word>>(32-(offset))))
@@ -36,11 +38,11 @@ bool test = false;
 // Functions
 
 void setup() {
-	
+
+  pinMode(BUTTON_PIN, INPUT);
+  
 	Serial.begin(115200);
   
-	Serial.println("LoRaCCP v1");
-
   if (!test) {
     if (!LoRa.begin(frequency)) {
       Serial.println("Failed initializing LoRa connection...");
@@ -60,19 +62,26 @@ void setup() {
   
 	// setup callback for onTxDone such that it can be put in receive mode af transmitting
 
-  transmitMessage(true);      // send nonce to server and derive secret key
-
   if (!test) {
     LoRa.idle();                          // set standby mode
     LoRa.disableInvertIQ();               // normal mode 
   }
+
+  delay(500);
+
+  transmitMessage(true);      // send nonce to server and derive secret key
 }
 
 void loop() {
+  byte buttonState = digitalRead(BUTTON_PIN);
 	// wait for 2000 msec
 	if (!test) {
-    if (waited(2000)) {
+    /*if (waited(2000)) {
       transmitMessage(false);
+    }*/
+    if (buttonState == HIGH) {
+      transmitMessage(false);
+      delay(500);
     }
 	} else {
     delay(1000);
@@ -91,36 +100,117 @@ bool waited(int interval) {
 }
 
 void transmitMessage(bool firstNonce) {
-	byte header_b1 = deviceAddress >> 4;
-	byte header_b2 = (deviceAddress << 4) or (sequenceNumber >> 8);
-	byte header_b3 = sequenceNumber;
+	uint8_t header_b1 = deviceAddress >> 4;
+	uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
+	uint8_t header_b3 = sequenceNumber;
+
+  /*Serial.println("deviceAddress << 4, BIN");
+  Serial.println(deviceAddress << 4, BIN);
+  Serial.println("sequenceNumber >> 8, BIN");
+  Serial.println(sequenceNumber >> 8, BIN);*/
+  
+  /*Serial.println("header_b2, BIN");
+  Serial.println(header_b2, BIN);
+  Serial.println("(deviceAddress << 4) | (sequenceNumber >> 8), BIN");
+  Serial.println((uint8_t)((deviceAddress << 4) | (sequenceNumber >> 8)), BIN);*/
+  
+  /*Serial.println("deviceAddress >> 1");
+  Serial.println(deviceAddress >> 1, BIN);
+  Serial.println("deviceAddress >> 2");
+  Serial.println(deviceAddress >> 2, BIN);
+  Serial.println("deviceAddress >> 3");
+  Serial.println(deviceAddress >> 3, BIN);
+  Serial.println("deviceAddress >> 4");
+  Serial.println(deviceAddress >> 4, BIN);
+  Serial.println("header_b1");
+  Serial.println(header_b1, BIN);*/
 
   uint16_t payload;
   uint32_t mic;
-  
+
   if (firstNonce) {
     payload = getFirstNonce();
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
     }
+    
     deriveSecretKey(blakePlaceholder(payload));
     mic = getMIC(payload, key);
   } else {
     payload = getPayload();
+    Serial.print("Plaintext:       ");
+    Serial.println(payload);
     payload = getCiphertext(payload);
     mic = getMIC(payload, secretKey);
   }
+
+  uint8_t payload_b1 = payload >> 8;
+  uint8_t payload_b2 = payload;
+  
+  uint8_t mic_b1 = mic >> 24;
+  uint8_t mic_b2 = mic >> 16;
+  uint8_t mic_b3 = mic >> 8;
+  uint8_t mic_b4 = mic;
+
+  //Serial.println("What we intended to send:");
+  Serial.print("Device Address:  ");
+  Serial.println(deviceAddress);
+  //Serial.print("\t\tIn binary: ");
+  //Serial.println(deviceAddress, BIN);
+  Serial.print("Sequence Num:    ");
+  Serial.println(sequenceNumber);
+  Serial.print("Ciphertext:      ");
+  Serial.println(payload);
+  Serial.print("Secret Key:      ");
+  for (int i = 0; i < 8; i++) {
+    Serial.print(secretKey[i]);
+  }
+  Serial.println();
+  /*Serial.print("B1:\t\t");
+  Serial.println(header_b1, BIN);
+  Serial.print("B2:\t\t");
+  Serial.println(header_b2, BIN);
+  Serial.print("B3:\t\t");
+  Serial.println(header_b3, BIN);*/
+
+  /*Serial.println("What we intended to send:");
+  Serial.print("B1:\t\t");
+  Serial.println(header_b1, BIN);
+  Serial.print("B2:\t\t");
+  Serial.println(header_b2, BIN);
+  Serial.print("B3:\t\t");
+  Serial.println(header_b3, BIN);*/
 
 	LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
 	LoRa.write(header_b1);
 	LoRa.write(header_b2);
 	LoRa.write(header_b3);
-	LoRa.print(payload);
-	LoRa.print(mic);
+	LoRa.write(payload_b1);
+  LoRa.write(payload_b2);
+	LoRa.write(mic_b1);
+  LoRa.write(mic_b2);
+  LoRa.write(mic_b3);
+  LoRa.write(mic_b4);
 	LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
 
+  //whatDidWeJustSend(header_b1,header_b2,header_b3);
+
 	sequenceNumber++;
+}
+
+void whatDidWeJustSend(uint8_t b1, uint8_t b2, uint8_t b3) {
+  uint16_t devAddr;
+  uint16_t seqNum;
+
+  
+  devAddr = b1 << 4;
+  devAddr = devAddr | (b2 >> 4);
+  Serial.println("What we actually sent:");
+  Serial.print("Device Address: ");
+  Serial.print(devAddr);
+  Serial.print("\t\tIn binary: ");
+  Serial.println(devAddr, BIN);
 }
 
 uint16_t getPayload() {
@@ -142,9 +232,6 @@ uint16_t getCiphertext(uint16_t payload) {
 	uint16_t msgKey16 = (uint16_t)msgKey;
 
   uint16_t ciphertext = payload ^ msgKey16;
-
-  Serial.print("CIPHER: ");
-  Serial.println(ciphertext);
 
 	return ciphertext;
 }
@@ -178,7 +265,12 @@ uint32_t getMsgKey() {
 }
 
 void deriveSecretKey(uint8_t nonce[]) {
-
+  Serial.println("---------- Deriving secret key ----------");
+  Serial.println("Nonce: ");
+  for (int i = 0; i < 8; i++) {
+    Serial.print(nonce[i]);
+  }
+  Serial.println();
   uint32_t nonceword[2];
   uint8_t ciphertext[8];
   uint32_t ciphertextword[2];
@@ -190,7 +282,19 @@ void deriveSecretKey(uint8_t nonce[]) {
   ConvertBW32(rootKey,rootKeyWord, 16);
   Expand128(rootKeyWord, roundkey);
   Block64Encrypt(nonceword, ciphertextword, roundkey);
-  ConvertW32B(ciphertextword, ciphertext, 8);
+  /*Serial.println("Ciphertextword before");
+  for(int i = 0; i < 2; i++) {
+    Serial.print(ciphertextword[i], BIN);
+    Serial.print(" ");
+  }
+  Serial.println();*/
+  ConvertW32B(ciphertextword, ciphertext, 2);
+  /*Serial.println("Ciphertext after");
+  for(int i = 0; i < 8; i++) {
+    Serial.print(ciphertext[i], BIN);
+    Serial.print(" ");
+  }
+  Serial.println();*/
 
   /*uint32_t sKey = ((uint32_t)ciphertext[0] << 56) | ((uint32_t)ciphertext[1] << 48) | 
                   ((uint32_t)ciphertext[2] << 40) | ((uint32_t)ciphertext[3] << 32) |
