@@ -11,7 +11,7 @@
 
 //////////////////////////////////////////////
 // Variables
-#define BUTTON_PIN 4          // button pin number
+#define BUTTON_PIN 3          // button pin number
 
 String outgoing;              // outgoing message
 byte seqNum = 0;              // sequence number of outgoing messages
