@@ -111,7 +111,7 @@ void transmitMessage(bool firstNonce) {
 	uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
 	uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  uint16_t *payload;
   uint32_t mic;
 
   if (firstNonce) {
@@ -168,19 +168,49 @@ void transmitMessage(bool firstNonce) {
 	sequenceNumber++;
 }
 
-uint16_t getPayload() {
-	return (uint16_t)random(65535);
+/* array length : 1, 2, 4, 8
+ * 
+ */
+uint16_t * getPayload(int lengthBytes) {
+  static uint16_t payload[lengthBytes];
+  for (int i = 0; i < lengthBytes; i++) {
+    payload[i] = random(255);
+  }
+	return payload;
 }
 
 uint16_t getFirstNonce() {
-  return (uint16_t)random(65535);
+  static uint16_t nonce[2];
+  for (int i = 0; i < 2; i++) {
+    nonce[i] = random(255);
+  }
+  return nonce;
 }
 
-uint8_t * blakePlaceholder(uint16_t payload) {
-  static uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (uint8_t)(payload >> 8), (uint8_t)payload};
+uint8_t * blakePlaceholder(uint8_t payload[]) {
+  static uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, payload[0], payload[1]};
   return hashedNonce;
 }
 
+/* Function that hashes the 2 byte nonce to and 8 byte nonce:
+ *  
+ * Input 1:  uint16_t inputNonce
+ * Input 2:  uint8_t rootKey[16]        (can also use shorter portions of the rootKey if a 16 byte key is too much)
+ * 
+ * Output:   uint8_t outputNonce[8]
+ *  
+ */
+
+/* Function that creates MIC:
+ *  
+ * Input 1:  uint16_t ciphertext[cipher_length]     (cipher_length can vary between 1, 2, 4, 8)
+ * Input 2:  uint32_t devAddrSeqNum                 (only the least significant 24 bits should be used => if it is easier for you we can also make this variable a uint8_t array with three entries) 
+ * Input 3:  uint8_t key[8]
+ * 
+ * Output:   uint8_t MIC[mic_length]                (mic_length can be whatever)
+ * 
+ */
+ 
 uint16_t getCiphertext(uint16_t payload) {
 
 	uint32_t msgKey = getMsgKey();
@@ -191,7 +221,7 @@ uint16_t getCiphertext(uint16_t payload) {
 	return ciphertext;
 }
 
-uint32_t getMIC(uint16_t ciphertext, uint8_t key[]) {
+uint32_t getMIC(uint16_t ciphertext[], uint8_t key[]) {
   // insert blake hashing
 
   return 1249816708;
