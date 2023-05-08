@@ -354,6 +354,7 @@ void transmitMessage(bool firstNonce) {
 
 
     uint8_t longNonce[8];
+    uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
     blake2s(&longNonce, 8, rootKey, 16, payload, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
