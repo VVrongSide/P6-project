@@ -336,7 +336,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  static uint16_t payload;
   uint8_t mic[4];
 
   Serial.println("---------- Before encryption ----------");
@@ -352,12 +352,14 @@ void transmitMessage(bool firstNonce) {
       key[i] = rootKey[i];
     }
 
-
-    uint8_t longNonce[8];
-    blake2s(&longNonce, 8, rootKey, 16, payload, 2);
+    // Derive Secret Key
+    static uint8_t longNonce[8];
+    uint8_t nonceInput[2] = {(uint8_t)(payload>>8), (uint8_t)payload};
+    blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
 
+    // Generate MIC for packet
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, rootKey, 16, micInput, 5);
     //mic = getMIC(payload, key);
@@ -379,11 +381,11 @@ void transmitMessage(bool firstNonce) {
   Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
-  Serial.print("\t\t\t | ");
+  Serial.print("\t\t\t\t | ");
   Serial.println("12 bits");
   Serial.print("Sequence Num:    ");
   Serial.print(sequenceNumber);
-  Serial.print("\t\t\t | ");
+  Serial.print("\t\t\t\t | ");
   Serial.println("12 bits");
   Serial.print("Ciphertext:      ");
   Serial.print(payload);
@@ -394,12 +396,17 @@ void transmitMessage(bool firstNonce) {
   for (int i = 0; i < 4; i++) {
     Serial.print(mic[i]);
   }
-  Serial.print("\t\t | ");
+  Serial.print("\t\t\t | ");
   Serial.print(sizeof(mic));
   Serial.println(" bytes");
   Serial.print("Secret Key:      ");
   for (int i = 0; i < 8; i++) {
     Serial.print(secretKey[i]);
+  }
+  Serial.println();
+  Serial.print("Root Key:      ");
+  for (int i = 0; i < 16; i++) {
+    Serial.print(rootKey[i]);
   }
   Serial.println();
   Serial.println("---------------------------------------");
