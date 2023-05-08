@@ -372,7 +372,7 @@ void blake2s_final(blake2s_ctx *ctx, void *out)
   }
 }
 
-int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void *in, size_t inlen) {  
+int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void *in, size_t inlen) {
   blake2s_ctx ctx;
 
   if (blake2s_init(&ctx, outlen, key, keylen))
@@ -426,12 +426,11 @@ void loop() {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
-  //Serial.println("---------------------------------------");
   uint8_t headerFields[3];
   uint16_t deviceAddress;
   uint16_t sequenceNum;
   uint16_t payload = 0;
-  uint8_t mic[4];
+  static uint8_t mic[4];
 
   for (int i = 0; i < packetSize; i++) {
     if (i == 0) {
@@ -481,7 +480,6 @@ void onReceive(int packetSize) {
             key[y] = devices[x].rootkey[y];
           }
         }
-
         if (devices[x].seqNum >= sequenceNum) {
           //Serial.print("Dropping packet: Inconsistent seq_num\n");
           return;
@@ -556,11 +554,8 @@ void onReceive(int packetSize) {
             }
             Serial.println();*/
           static uint8_t longNonce[8];
-
-          uint8_t nonceInput[2] = {(uint8_t)(payload>>8), (uint8_t)payload};    
-          
+          uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
           blake2s(&longNonce, 8, devices[x].rootkey, 16, nonceInput, 2);
-
           deriveSecretKey(longNonce, x);
         } else {
           //Serial.print("WTF, should not be happening!!!\n");
