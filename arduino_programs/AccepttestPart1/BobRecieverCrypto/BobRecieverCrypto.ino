@@ -372,8 +372,7 @@ void blake2s_final(blake2s_ctx *ctx, void *out)
   }
 }
 
-int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void *in, size_t inlen) {
-
+int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void *in, size_t inlen) {  
   blake2s_ctx ctx;
 
   if (blake2s_init(&ctx, outlen, key, keylen))
@@ -388,7 +387,7 @@ int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void
 /////////////////////////////////////////////
 // Setup environment
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   while (!Serial);
   Serial.println("LoRa Receiver");
@@ -428,7 +427,6 @@ void loop() {
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
   //Serial.println("---------------------------------------");
-  //Serial.println("Packet arrived");
   uint8_t headerFields[3];
   uint16_t deviceAddress;
   uint16_t sequenceNum;
@@ -462,18 +460,21 @@ void onReceive(int packetSize) {
     }
   }
 
-
   int x;
   if (devices[0].id != 0) {
     for (x = 0; x < 5; x++) {
       if (devices[x].id == deviceAddress) {
+        uint8_t keyLength = 16;
         uint8_t key[16];
         //Serial.print("Succes\n");
         if (devices[x].activated == true) {
-          //Serial.print("This is a payload\n");
+          keyLength = 8;
+          //Serial.println("SecretKEY");
           for (int y = 0; y < 8; y++) {
             key[y] = devices[x].secretkey[y];
+            //Serial.print(devices[x].secretkey[y]);
           }
+          //Serial.println();
         } else {
           //Serial.print("This is a nonce\n");
           for (int y = 0; y < 16; y++) {
@@ -488,20 +489,14 @@ void onReceive(int packetSize) {
 
         uint8_t micInput[5] = {headerFields[0], headerFields[1], headerFields[2], (uint8_t)payload >> 8, (uint8_t)payload};       //fix
         uint8_t receiverGeneratedMic[4];
-        blake2s(receiverGeneratedMic, 4, key, sizeof(key), micInput, 5);
+
+        blake2s(receiverGeneratedMic, 4, key, keyLength, micInput, 5);
 
         for (int n = 0; n < 4; n++) if (receiverGeneratedMic[n] != mic[n]) return;
 
-        /*Serial.print("Key: ");
-          for (int j = 0; j < 16; j++) {
-          Serial.print(key[j]);
-          }
-          Serial.println();
-          Serial.println();*/
-
         devices[x].seqNum = sequenceNum;
         if (devices[x].activated == true) {
-          Serial.println("---------- Before decryption ----------");
+          Serial.println("\n---------- Before decryption ----------");
           Serial.print("Device address:   ");
           Serial.print(deviceAddress);
           Serial.println("\t\t\t\t|\t12 bits");
@@ -551,7 +546,7 @@ void onReceive(int packetSize) {
           //Serial.print("Received message: ");
           //Serial.println(text);
         } else if (devices[x].activated == false) {
-          Serial.println("..... Secret key derivation .....");
+          Serial.println("\n..... Secret key derivation .....");
           // Generate secret key
           /*uint8_t *hashedNonce;
             hashedNonce = blakePlaceholder(payload);
@@ -560,8 +555,12 @@ void onReceive(int packetSize) {
             Serial.print(hashedNonce[j]);
             }
             Serial.println();*/
-          uint8_t longNonce[8];
-          blake2s(&longNonce, 8, devices[x].rootkey, 16, payload, 2);
+          static uint8_t longNonce[8];
+
+          uint8_t nonceInput[2] = {(uint8_t)(payload>>8), (uint8_t)payload};    
+          
+          blake2s(&longNonce, 8, devices[x].rootkey, 16, nonceInput, 2);
+
           deriveSecretKey(longNonce, x);
         } else {
           //Serial.print("WTF, should not be happening!!!\n");
