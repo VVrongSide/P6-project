@@ -44,7 +44,7 @@ struct EndDevice devices[5] = {};
 
 
 uint32_t getMsgKey(uint8_t initVector[], uint8_t secretKey[]) {
-  
+
   uint8_t plaintext[4];
   uint32_t plaintextword[1];
   uint8_t ciphertext[4];
@@ -66,14 +66,14 @@ uint32_t getMsgKey(uint8_t initVector[], uint8_t secretKey[]) {
 }
 
 void deriveSecretKey(uint8_t * nonce, int device_num) {
-  Serial.println("---------- Decrypting ----------");
-  Serial.print("Nonce: ");
-  for (int x=0; x < 8; x++) {
+  /*Serial.println("---------- Decrypting ----------");
+    Serial.print("Nonce: ");
+    for (int x=0; x < 8; x++) {
     Serial.print(nonce[x]);
     Serial.print(" ");
-  }
-  Serial.println();
-  
+    }
+    Serial.println();*/
+
   uint32_t nonceword[2];
   uint8_t ciphertext[8];
   uint32_t ciphertextword[2];
@@ -87,17 +87,10 @@ void deriveSecretKey(uint8_t * nonce, int device_num) {
   Block64Encrypt(nonceword, ciphertextword, roundkey);
   ConvertW32B(ciphertextword, ciphertext, 2);
 
-  /*  uint32_t sKey = ((uint32_t)ciphertext[0] << 56) | ((uint32_t)ciphertext[1] << 48) |
-                    ((uint32_t)ciphertext[2] << 40) | ((uint32_t)ciphertext[3] << 32) |
-                    ((uint32_t)ciphertext[4] << 24) | ((uint32_t)ciphertext[5] << 16) |
-                    ((uint32_t)ciphertext[6] << 8) | (uint32_t)ciphertext[7];
-    Serial.print("Secret key derived: ");
-    Serial.println(sKey); */
-
   for (int i = 0; i < 8; i++) {
     devices[device_num].secretkey[i] = ciphertext[i];
   }
-  devices[device_num].activated = true; 
+  devices[device_num].activated = true;
 }
 
 
@@ -111,12 +104,12 @@ uint32_t checkMIC(uint16_t dev_addr, uint16_t seq_num, uint16_t payload, uint8_t
 
 uint8_t * blakePlaceholder(uint16_t payload) {
   static uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (uint8_t)(payload >> 8), (uint8_t)payload};
-  Serial.print("blakePlaceholder hashedNonce ");
-  for (int i = 0; i < 8; i++) {
+  /*Serial.print("blakePlaceholder hashedNonce ");
+    for (int i = 0; i < 8; i++) {
     Serial.print(hashedNonce[i]);
     Serial.print(" ");
-  }
-  Serial.println();
+    }
+    Serial.println();*/
   return hashedNonce;
 }
 
@@ -242,8 +235,8 @@ void loop() {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
-  Serial.println("---------------------------------------");
-  Serial.println("Packet arrived");
+  //Serial.println("---------------------------------------");
+  //Serial.println("Packet arrived");
   uint16_t deviceAddress;
   uint16_t sequenceNum;
   uint16_t payload = 0;
@@ -272,76 +265,124 @@ void onReceive(int packetSize) {
       mic = mic | (tmp << 8 * (8 - i));
     }
   }
-  Serial.print("Device address: ");
-  Serial.println(deviceAddress);
-  Serial.print("Sequence number: ");
-  Serial.println(sequenceNum);
-  Serial.print("Received payload: ");
-  Serial.println(payload);
-  Serial.print("MIC: ");
-  Serial.println(mic);
+
 
   int x;
   if (devices[0].id != 0) {
     for (x = 0; x < 5; x++) {
       if (devices[x].id == deviceAddress) {
         uint8_t key[16];
-        Serial.print("Succes\n");
+        //Serial.print("Succes\n");
         if (devices[x].activated == true) {
-          Serial.print("This is a payload\n");
+          //Serial.print("This is a payload\n");
           for (int y = 0; y < 8; y++) {
             key[y] = devices[x].secretkey[y];
           }
         } else {
-          Serial.print("This is a nonce\n");
+          //Serial.print("This is a nonce\n");
           for (int y = 0; y < 16; y++) {
             key[y] = devices[x].rootkey[y];
           }
         }
 
         if (devices[x].seqNum >= sequenceNum) {
-          Serial.print("Dropping packet: Inconsistent seq_num\n");
+          //Serial.print("Dropping packet: Inconsistent seq_num\n");
           return;
         }
         if (checkMIC(deviceAddress, sequenceNum, payload, key) != mic) {
-          Serial.print("Dropping packet: Incosistent mic\n");
+          //Serial.print("Dropping packet: Incosistent mic\n");
           return;
         }
 
-        Serial.print("Key: ");
-        for (int j = 0; j < 16; j++) {
+        /*Serial.print("Key: ");
+          for (int j = 0; j < 16; j++) {
           Serial.print(key[j]);
-        }
-        Serial.println();
-        Serial.println();
+          }
+          Serial.println();
+          Serial.println();*/
 
         devices[x].seqNum = sequenceNum;
         if (devices[x].activated == true) {
+          Serial.println("---------- Before decryption ----------");
+          Serial.print("Device address:   ");
+          Serial.print(deviceAddress);
+          Serial.println("\t\t\t\t|\t12 bits");
+          Serial.print("Sequence number:  ");
+          Serial.print(sequenceNum);
+          Serial.println("\t\t\t\t|\t12 bits");
+          Serial.print("Ciphertext:       ");
+          Serial.print(payload);
+          Serial.print("\t\t\t\t|\t");
+          Serial.print(sizeof(payload));
+          Serial.println(" bytes");
+          Serial.print("MIC:              ");
+          Serial.print(mic);
+          Serial.print("\t\t\t|\t");
+          Serial.print(sizeof(mic));
+          Serial.println(" bytes");
+          Serial.print("Secret key:       ");
+          for (int k = 0; k < 8; k++) {
+            Serial.print(devices[x].secretkey[k]);
+          }
+          Serial.println("\t\t|");
+          Serial.println("----------------------------------------");
+
           // Decrypt
-          Serial.println("Initiating decryption...");
+          //Serial.println("Initiating decryption...");
           uint8_t IV[4];
           getAddressSequence(IV, deviceAddress, sequenceNum);
           uint32_t msgKey = getMsgKey(IV, key);
           uint16_t text = payload ^ (uint16_t)msgKey;
-          Serial.print("Received message: ");
-          Serial.println(text);
+
+          Serial.println("---------- After decryption ----------");
+          Serial.print("Device address:   ");
+          Serial.print(deviceAddress);
+          Serial.println("\t\t\t\t|\t12 bits");
+          Serial.print("Sequence number:  ");
+          Serial.print(sequenceNum);
+          Serial.println("\t\t\t\t|\t12 bits");
+          Serial.print("Plaintext:        ");
+          Serial.print(text);
+          Serial.print("\t\t\t\t|\t");
+          Serial.print(sizeof(text));
+          Serial.println(" bytes");
+          Serial.println("--------------------------------------");
+
+          //Serial.print("Received message: ");
+          //Serial.println(text);
         } else if (devices[x].activated == false) {
+          Serial.println("..... Secret key derivation .....");
           // Generate secret key
           /*uint8_t *hashedNonce;
-          hashedNonce = blakePlaceholder(payload);
-          Serial.println("inbetween");
-          for (int j = 0; j < 8; j++) {
+            hashedNonce = blakePlaceholder(payload);
+            Serial.println("inbetween");
+            for (int j = 0; j < 8; j++) {
             Serial.print(hashedNonce[j]);
-          }
-          Serial.println();*/
+            }
+            Serial.println();*/
           deriveSecretKey(blakePlaceholder(payload), x);
         } else {
-          Serial.print("WTF, should not be happening!!!\n");
+          //Serial.print("WTF, should not be happening!!!\n");
         }
 
       } else {
       }
     }
   }
+  //transmitPacket();
 
+}
+
+void transmitPacket () {
+  LoRa.enableInvertIQ();
+  LoRa.idle();
+  for (int i = 0; i < 10; i++) {
+    delay(50);
+    Serial.println("transmitted!!!!!!!!!!!!!");
+    LoRa.beginPacket();
+    LoRa.print("hello");
+    LoRa.endPacket();
+  }
+  LoRa.disableInvertIQ();
+  LoRa.receive();
 }
