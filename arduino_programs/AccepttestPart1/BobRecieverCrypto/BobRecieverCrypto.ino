@@ -426,11 +426,12 @@ void loop() {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
+  Serial.println("---------------------------------------");
   uint8_t headerFields[3];
   uint16_t deviceAddress;
   uint16_t sequenceNum;
   uint16_t payload = 0;
-  static uint8_t mic[4];
+  uint8_t mic[4];
 
   for (int i = 0; i < packetSize; i++) {
     if (i == 0) {
@@ -459,6 +460,7 @@ void onReceive(int packetSize) {
     }
   }
 
+
   int x;
   if (devices[0].id != 0) {
     for (x = 0; x < 5; x++) {
@@ -480,17 +482,22 @@ void onReceive(int packetSize) {
             key[y] = devices[x].rootkey[y];
           }
         }
+
         if (devices[x].seqNum >= sequenceNum) {
-          //Serial.print("Dropping packet: Inconsistent seq_num\n");
+          Serial.print("Dropping packet: Inconsistent seq_num\n");
           return;
         }
-
         uint8_t micInput[5] = {headerFields[0], headerFields[1], headerFields[2], (uint8_t)payload >> 8, (uint8_t)payload};       //fix
         uint8_t receiverGeneratedMic[4];
 
         blake2s(receiverGeneratedMic, 4, key, keyLength, micInput, 5);
-
-        for (int n = 0; n < 4; n++) if (receiverGeneratedMic[n] != mic[n]) return;
+        
+        for (int n = 0; n < 4; n++) { 
+          if (receiverGeneratedMic[n] != mic[n]) {
+            Serial.println("Inconsistent MIC -- Dropping packet");
+            return;
+          }
+        }
 
         devices[x].seqNum = sequenceNum;
         if (devices[x].activated == true) {
@@ -554,8 +561,11 @@ void onReceive(int packetSize) {
             }
             Serial.println();*/
           static uint8_t longNonce[8];
+
           uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
+
           blake2s(&longNonce, 8, devices[x].rootkey, 16, nonceInput, 2);
+
           deriveSecretKey(longNonce, x);
         } else {
           //Serial.print("WTF, should not be happening!!!\n");
