@@ -426,7 +426,7 @@ void loop() {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
-  Serial.println("---------------------------------------");
+  //Serial.println("---------------------------------------");
   uint8_t headerFields[3];
   uint16_t deviceAddress;
   uint16_t sequenceNum;
@@ -483,16 +483,50 @@ void onReceive(int packetSize) {
           }
         }
 
+        Serial.println("\n----------\t Received\t ----------");
+        Serial.print("Device address:   ");
+        Serial.print(deviceAddress);
+        Serial.println("\t\t\t\t|\t12 bits");
+        Serial.print("Sequence number:  ");
+        Serial.print(sequenceNum);
+        Serial.println("\t\t\t\t|\t12 bits");
+        Serial.print("Ciphertext:       ");
+        Serial.print(payload);
+        Serial.print("\t\t\t\t|\t");
+        Serial.print(sizeof(payload));
+        Serial.println(" bytes");
+        Serial.print("MIC:              ");
+        for (int i = 0; i < 4; i++) {
+          Serial.print(mic[i]);
+        }
+        Serial.print("\t\t\t|\t");
+        Serial.print(sizeof(mic));
+        Serial.println(" bytes");
+        Serial.print("Secret key:       ");
+        for (int k = 0; k < 8; k++) {
+          Serial.print(devices[x].secretkey[k]);
+        }
+        Serial.println("\t\t|");
+        Serial.println("-----------------------------------------------");
+        Serial.println();
+
         if (devices[x].seqNum >= sequenceNum) {
-          Serial.print("Dropping packet: Inconsistent seq_num\n");
+          Serial.println("----------\t DROPPING PACKET\t----------");
+          Serial.println("---------- Inconsistent sequence number ----------");
+          Serial.print("Received: ");
+          Serial.println(sequenceNum);
+          Serial.print("Expected: ");
+          Serial.println(devices[x].seqNum+1);
+          Serial.println();
           return;
         }
+        
         uint8_t micInput[5] = {headerFields[0], headerFields[1], headerFields[2], (uint8_t)payload >> 8, (uint8_t)payload};       //fix
         uint8_t receiverGeneratedMic[4];
 
         blake2s(receiverGeneratedMic, 4, key, keyLength, micInput, 5);
-        
-        for (int n = 0; n < 4; n++) { 
+
+        for (int n = 0; n < 4; n++) {
           if (receiverGeneratedMic[n] != mic[n]) {
             Serial.println("Inconsistent MIC -- Dropping packet");
             return;
@@ -501,32 +535,6 @@ void onReceive(int packetSize) {
 
         devices[x].seqNum = sequenceNum;
         if (devices[x].activated == true) {
-          Serial.println("\n---------- Before decryption ----------");
-          Serial.print("Device address:   ");
-          Serial.print(deviceAddress);
-          Serial.println("\t\t\t\t|\t12 bits");
-          Serial.print("Sequence number:  ");
-          Serial.print(sequenceNum);
-          Serial.println("\t\t\t\t|\t12 bits");
-          Serial.print("Ciphertext:       ");
-          Serial.print(payload);
-          Serial.print("\t\t\t\t|\t");
-          Serial.print(sizeof(payload));
-          Serial.println(" bytes");
-          Serial.print("MIC:              ");
-          for (int i = 0; i < 4; i++) {
-            Serial.print(mic[i]);
-          }
-          Serial.print("\t\t\t|\t");
-          Serial.print(sizeof(mic));
-          Serial.println(" bytes");
-          Serial.print("Secret key:       ");
-          for (int k = 0; k < 8; k++) {
-            Serial.print(devices[x].secretkey[k]);
-          }
-          Serial.println("\t\t|");
-          Serial.println("----------------------------------------");
-
           // Decrypt
           //Serial.println("Initiating decryption...");
           uint8_t IV[4];
@@ -534,7 +542,7 @@ void onReceive(int packetSize) {
           uint32_t msgKey = getMsgKey(IV, key);
           uint16_t text = payload ^ (uint16_t)msgKey;
 
-          Serial.println("---------- After decryption ----------");
+          Serial.println("---------\t After decryption\t ---------");
           Serial.print("Device address:   ");
           Serial.print(deviceAddress);
           Serial.println("\t\t\t\t|\t12 bits");
@@ -547,6 +555,7 @@ void onReceive(int packetSize) {
           Serial.print(sizeof(text));
           Serial.println(" bytes");
           Serial.println("--------------------------------------");
+          Serial.println();
 
           //Serial.print("Received message: ");
           //Serial.println(text);
