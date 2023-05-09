@@ -516,11 +516,11 @@ void onReceive(int packetSize) {
           Serial.print("Received: ");
           Serial.println(sequenceNum);
           Serial.print("Expected: ");
-          Serial.println(devices[x].seqNum+1);
+          Serial.println(devices[x].seqNum + 1);
           Serial.println();
           return;
         }
-        
+
         uint8_t micInput[5] = {headerFields[0], headerFields[1], headerFields[2], (uint8_t)payload >> 8, (uint8_t)payload};       //fix
         uint8_t receiverGeneratedMic[4];
 
@@ -528,7 +528,8 @@ void onReceive(int packetSize) {
 
         for (int n = 0; n < 4; n++) {
           if (receiverGeneratedMic[n] != mic[n]) {
-            Serial.println("Inconsistent MIC -- Dropping packet");
+            Serial.println("----------\t DROPPING PACKET\t----------");
+            Serial.println("---------- Inconsistent MIC ----------");
             return;
           }
         }
