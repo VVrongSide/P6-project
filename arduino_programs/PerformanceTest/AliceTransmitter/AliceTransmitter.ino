@@ -305,6 +305,7 @@ void onReceive(int packetSize) {
   for (int i = 0; i < packetSize; i++) {
     Serial.print((char)LoRa.read());
   }
+  Serial.println();
 }
 
 void transmitMessage(bool firstNonce) {
@@ -319,18 +320,27 @@ void transmitMessage(bool firstNonce) {
 
   Serial.println("---------- Before encryption ----------");
   Serial.print("Device Address:  ");
-  Serial.println(deviceAddress);
+  Serial.print(deviceAddress);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
   Serial.print("Sequence Num:    ");
-  Serial.println(sequenceNumber);
+  Serial.print(sequenceNumber);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
 
   if (firstNonce) {
     payload = getFirstNonce();
+
+    Serial.print("Nonce:           ");
+    Serial.print(payload);
+    Serial.print("\t\t\t | ");
+    Serial.print(sizeof(payload));
+    Serial.println(" bytes");
+    
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
     }
-
-
     uint8_t longNonce[8];
     uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
     blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
@@ -343,7 +353,10 @@ void transmitMessage(bool firstNonce) {
   } else {
     payload = getPayload();
     Serial.print("Plaintext:       ");
-    Serial.println(payload);
+    Serial.print(payload);
+    Serial.print("\t\t\t | ");
+    Serial.print(sizeof(payload));
+    Serial.println(" bytes");
     payload = getCiphertext(payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
@@ -364,11 +377,13 @@ void transmitMessage(bool firstNonce) {
   Serial.print(sequenceNumber);
   Serial.print("\t\t\t | ");
   Serial.println("12 bits");
-  Serial.print("Ciphertext:      ");
-  Serial.print(payload);
-  Serial.print("\t\t\t | ");
-  Serial.print(sizeof(payload));
-  Serial.println(" bytes");
+  if (sequenceNumber > 1) {
+    Serial.print("Ciphertext:      ");
+    Serial.print(payload);
+    Serial.print("\t\t\t | ");
+    Serial.print(sizeof(payload));
+    Serial.println(" bytes");
+  }
   Serial.print("MIC:             ");
   for (int i = 0; i < 4; i++) {
     Serial.print(mic[i]);
