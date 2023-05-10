@@ -324,7 +324,7 @@ void transmitMessage(bool firstNonce) {
   uint16_t payload;
   uint8_t mic[4];
 
-  /*Serial.println("---------- Before encryption ----------");
+  Serial.println("---------- Before encryption ----------");
     Serial.print("Device Address:  ");
     Serial.print(deviceAddress);
     Serial.print("\t\t\t | ");
@@ -332,16 +332,16 @@ void transmitMessage(bool firstNonce) {
     Serial.print("Sequence Num:    ");
     Serial.print(sequenceNumber);
     Serial.print("\t\t\t | ");
-    Serial.println("12 bits");*/
+    Serial.println("12 bits");
 
   if (firstNonce) {
     payload = getFirstNonce();
 
-    /*Serial.print("Nonce:           ");
+    Serial.print("Nonce:           ");
       Serial.print(payload);
       Serial.print("\t\t\t | ");
       Serial.print(sizeof(payload));
-      Serial.println(" bytes");*/
+      Serial.println(" bytes");
 
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
@@ -358,25 +358,28 @@ void transmitMessage(bool firstNonce) {
     //mic = getMIC(payload, key);
   } else {
     payload = getPayload();
-    /*Serial.print("Plaintext:       ");
+    Serial.print("Plaintext:       ");
       Serial.print(payload);
       Serial.print("\t\t\t | ");
       Serial.print(sizeof(payload));
-      Serial.println(" bytes");*/
+      Serial.println(" bytes");
     payload = getCiphertext(payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
   }
 
-  //Serial.println("---------------------------------------");
+  Serial.println("---------------------------------------");
 
   uint8_t payload_b1 = payload >> 8;
   uint8_t payload_b2 = payload;
 
+  Serial.print("Digital read: ");
+  Serial.println(digitalRead(DATA_PROCESS_PIN));
+
   digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
 
-  /*Serial.println("----------- After encryption ----------");
+  Serial.println("----------- After encryption ----------");
     Serial.print("Device Address:  ");
     Serial.print(deviceAddress);
     Serial.print("\t\t\t | ");
@@ -404,7 +407,7 @@ void transmitMessage(bool firstNonce) {
     Serial.print(secretKey[i]);
     }
     Serial.println();
-    Serial.println("---------------------------------------");*/
+    Serial.println("---------------------------------------");
 
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);
 
