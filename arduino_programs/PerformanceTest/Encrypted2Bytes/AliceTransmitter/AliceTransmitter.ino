@@ -10,6 +10,10 @@
 
 #define BUTTON_PIN 4
 
+#define DATA_PROCESS_PIN 5    // data processing pin number
+#define DATA_TRANSMIT_PIN 6   // data transmitting pin number
+#define DATA_RECEIVE_PIN 7    // data receive pin number
+
 #define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
 #define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
 #define ROTL32(word, offset) (((word) << (offset)) | (word >> (32 - (offset))))
