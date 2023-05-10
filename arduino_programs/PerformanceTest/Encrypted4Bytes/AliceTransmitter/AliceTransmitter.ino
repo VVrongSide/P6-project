@@ -245,11 +245,6 @@ void setup() {
 
   Serial.begin(115200);
 
-  for (int i = 0; i < 20; i++) {
-    Serial.println();
-  }
-
-
   if (!test) {
     if (!LoRa.begin(frequency)) {
       Serial.println("Failed initializing LoRa connection...");
@@ -336,7 +331,7 @@ void transmitMessage(bool firstNonce) {
   uint16_t payload[2];
   uint8_t mic[4];
 
-  Serial.println("---------- Before encryption ----------");
+  /*Serial.println("---------- Before encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t | ");
@@ -344,16 +339,16 @@ void transmitMessage(bool firstNonce) {
   Serial.print("Sequence Num:    ");
   Serial.print(sequenceNumber);
   Serial.print("\t\t\t | ");
-  Serial.println("12 bits");
+  Serial.println("12 bits");*/
 
   if (firstNonce) {
     payload[0] = getFirstNonce();
 
-    Serial.print("Nonce:           ");
+    /*Serial.print("Nonce:           ");
     Serial.print(payload[0]);
     Serial.print("\t\t\t | ");
     Serial.print(sizeof(payload[0]));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
     
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
@@ -371,20 +366,20 @@ void transmitMessage(bool firstNonce) {
   } else {
     uint16_t tempPayload[2];
     getPayload(tempPayload);
-    Serial.print("Plaintext:       ");
+    /*Serial.print("Plaintext:       ");
     for (int i = 0; i < 2; i++) {
       Serial.print(tempPayload[i]);
     }
     Serial.print("\t\t | ");
     Serial.print(sizeof(tempPayload));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
     getCiphertext(tempPayload, payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
   }
 
-  Serial.println("---------------------------------------");
+  //Serial.println("---------------------------------------");
 
   uint8_t payload_b1 = payload[0] >> 8;
   uint8_t payload_b2 = payload[0];
@@ -393,7 +388,7 @@ void transmitMessage(bool firstNonce) {
 
   digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
 
-  Serial.println("----------- After encryption ----------");
+  /*Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t | ");
@@ -422,7 +417,7 @@ void transmitMessage(bool firstNonce) {
     Serial.print(secretKey[i]);
   }
   Serial.println();
-  Serial.println("---------------------------------------");
+  Serial.println("---------------------------------------");*/
 
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);
   
@@ -479,7 +474,7 @@ uint32_t getMsgKey() {
   ConvertBW32(secretKey, secretkeyword, 8);
   Expand64(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
   Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
-  ConvertW32B(ciphertextword, ciphertext, 4);
+  ConvertW32B(ciphertextword, ciphertext, 1);
 
   uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
                     ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];

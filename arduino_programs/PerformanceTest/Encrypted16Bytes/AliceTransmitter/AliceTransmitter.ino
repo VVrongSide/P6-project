@@ -241,14 +241,7 @@ void setup() {
   pinMode(DATA_TRANSMIT_PIN, OUTPUT);
   pinMode(DATA_RECEIVE_PIN, OUTPUT);
 
-
-
   Serial.begin(115200);
-
-  for (int i = 0; i < 20; i++) {
-    Serial.println();
-  }
-
 
   if (!test) {
     if (!LoRa.begin(frequency)) {
@@ -336,7 +329,7 @@ void transmitMessage(bool firstNonce) {
   uint16_t payload[8];
   uint8_t mic[4];
 
-  Serial.println("---------------------- Before encryption ----------------------");
+  /*Serial.println("---------------------- Before encryption ----------------------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t\t\t\t | ");
@@ -345,15 +338,15 @@ void transmitMessage(bool firstNonce) {
   Serial.print(sequenceNumber);
   Serial.print("\t\t\t\t\t\t | ");
   Serial.println("12 bits");
-
+*/
   if (firstNonce) {
     payload[0] = getFirstNonce();
 
-    Serial.print("Nonce:           ");
+ /*   Serial.print("Nonce:           ");
     Serial.print(payload[0]);
     Serial.print("\t\t\t\t\t\t | ");
     Serial.print(sizeof(payload[0]));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
 
     uint8_t longNonce[16];
     uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
@@ -367,20 +360,20 @@ void transmitMessage(bool firstNonce) {
   } else {
     uint16_t tempPayload[8];
     getPayload(tempPayload);
-    Serial.print("Plaintext:       ");
+    /*Serial.print("Plaintext:       ");
     for (int i = 0; i < 8; i++) {
       Serial.print(tempPayload[i]);
     }
     Serial.print("\t | ");
     Serial.print(sizeof(tempPayload));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
     getCiphertext(tempPayload, payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 16, micInput, 5);
   }
 
-  Serial.println("---------------------------------------------------------------");
+  //Serial.println("---------------------------------------------------------------");
 
   uint8_t payload_b1 = payload[0] >> 8;
   uint8_t payload_b2 = payload[0];
@@ -401,7 +394,7 @@ void transmitMessage(bool firstNonce) {
 
   digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
 
-  Serial.println("----------------------- After encryption ----------------------");
+  /*Serial.println("----------------------- After encryption ----------------------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t\t\t\t | ");
@@ -437,7 +430,7 @@ void transmitMessage(bool firstNonce) {
   }
   Serial.println();
   Serial.println("---------------------------------------------------------------");
-  Serial.println();
+  Serial.println();*/
 
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);
   

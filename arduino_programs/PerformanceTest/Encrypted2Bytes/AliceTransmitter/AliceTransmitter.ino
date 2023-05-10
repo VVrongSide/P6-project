@@ -235,11 +235,6 @@ void setup() {
 
   Serial.begin(115200);
 
-  for (int i = 0; i < 20; i++) {
-    Serial.println();
-  }
-
-
   if (!test) {
     if (!LoRa.begin(frequency)) {
       Serial.println("Failed initializing LoRa connection...");
@@ -281,6 +276,7 @@ void loop() {
     delay(200);
     LoRa.disableInvertIQ();
     LoRa.idle();
+    digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
   }
 }
 
@@ -295,7 +291,9 @@ bool waited(int interval) {
 }
 
 void onTxDone() {
-  Serial.println("txDone:");
+  //Serial.println("txDone:");
+
+  digitalWrite(DATA_RECEIVE_PIN, HIGH);                                       // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
 }
@@ -311,6 +309,9 @@ void onReceive(int packetSize) {
 void transmitMessage(bool firstNonce) {
   LoRa.disableInvertIQ();
   LoRa.idle();
+
+  digitalWrite(DATA_PROCESS_PIN, HIGH);                                   // [START] Data processing
+  
   uint8_t header_b1 = deviceAddress >> 4;
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
@@ -318,7 +319,7 @@ void transmitMessage(bool firstNonce) {
   uint16_t payload;
   uint8_t mic[4];
 
-  Serial.println("---------- Before encryption ----------");
+  /*Serial.println("---------- Before encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t | ");
@@ -326,16 +327,16 @@ void transmitMessage(bool firstNonce) {
   Serial.print("Sequence Num:    ");
   Serial.print(sequenceNumber);
   Serial.print("\t\t\t | ");
-  Serial.println("12 bits");
+  Serial.println("12 bits");*/
 
   if (firstNonce) {
     payload = getFirstNonce();
 
-    Serial.print("Nonce:           ");
+    /*Serial.print("Nonce:           ");
     Serial.print(payload);
     Serial.print("\t\t\t | ");
     Serial.print(sizeof(payload));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
     
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
@@ -352,23 +353,25 @@ void transmitMessage(bool firstNonce) {
     //mic = getMIC(payload, key);
   } else {
     payload = getPayload();
-    Serial.print("Plaintext:       ");
+    /*Serial.print("Plaintext:       ");
     Serial.print(payload);
     Serial.print("\t\t\t | ");
     Serial.print(sizeof(payload));
-    Serial.println(" bytes");
+    Serial.println(" bytes");*/
     payload = getCiphertext(payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
   }
 
-  Serial.println("---------------------------------------");
+  //Serial.println("---------------------------------------");
 
   uint8_t payload_b1 = payload >> 8;
   uint8_t payload_b2 = payload;
 
-  Serial.println("----------- After encryption ----------");
+  digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
+
+  /*Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
   Serial.print("\t\t\t | ");
@@ -396,7 +399,9 @@ void transmitMessage(bool firstNonce) {
     Serial.print(secretKey[i]);
   }
   Serial.println();
-  Serial.println("---------------------------------------");
+  Serial.println("---------------------------------------");*/
+
+  digitalWrite(DATA_TRANSMIT_PIN, HIGH);
 
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
   LoRa.write(header_b1);
@@ -409,6 +414,8 @@ void transmitMessage(bool firstNonce) {
   LoRa.write(mic[2]);
   LoRa.write(mic[3]);
   LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
+
+  digitalWrite(DATA_TRANSMIT_PIN, LOW);                                   // [STOP] Data transmission
 
   sequenceNumber++;
 }
@@ -459,7 +466,7 @@ uint32_t getMsgKey() {
   ConvertBW32(secretKey, secretkeyword, 8);
   Expand64(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
   Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
-  ConvertW32B(ciphertextword, ciphertext, 4);
+  ConvertW32B(ciphertextword, ciphertext, 1);
 
   uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
                     ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];
