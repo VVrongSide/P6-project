@@ -282,6 +282,7 @@ void loop() {
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
   LoRa.disableInvertIQ();
   LoRa.idle();
+  delay(1000);
 }
 
 bool waited(int interval) {
