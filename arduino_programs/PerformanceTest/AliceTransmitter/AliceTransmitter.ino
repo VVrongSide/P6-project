@@ -10,16 +10,16 @@
 
 #define BUTTON_PIN 4
 
-#define ROTL16(word, offset) (((word)<<(offset)) | (word>>(16-(offset))))
-#define ROTR16(word, offset) (((word)>>(offset)) | ((word)<<(16-(offset))))
-#define ROTL32(word, offset) (((word)<<(offset)) | (word>>(32-(offset))))
-#define ROTR32(word, offset) (((word)>>(offset)) | ((word)<<(32-(offset))))
+#define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
+#define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
+#define ROTL32(word, offset) (((word) << (offset)) | (word >> (32 - (offset))))
+#define ROTR32(word, offset) (((word) >> (offset)) | ((word) << (32 - (offset))))
+#define ROTL64(word, offset) (((word) << (offset)) | (word >> (64 - (offset))))
+#define ROTR64(word, offset) (((word) >> (offset)) | ((word) << (64 - (offset))))
 
-#define EncryptRound16(word1,word2,roundkey) (word1=(ROTR16(word1,8)+word2)^(roundkey), word2=ROTL16(word2,3)^word1)
-#define EncryptRound32(word1,word2,roundkey) (word1=(ROTR32(word1,8)+word2)^(roundkey), word2=ROTL32(word2,3)^word1)
-
-#define DecryptRound16(word1,word2,roundkey) (word2=ROTR16(word2^=word1,3), word1=ROTL16((word1^=roundkey)-word2,8))
-#define DecryptRound32(word1,word2,roundkey) (word2=ROTR32(word2^=word1,3), word1=ROTL32((word1^=roundkey)-word2,8))
+#define EncryptRound16(word1, word2, roundkey) (word1 = (ROTR16(word1, 8) + word2) ^ (roundkey), word2 = ROTL16(word2, 3) ^ word1)
+#define EncryptRound32(word1, word2, roundkey) (word1 = (ROTR32(word1, 8) + word2) ^ (roundkey), word2 = ROTL32(word2, 3) ^ word1)
+#define EncryptRound64(word1, word2, roundkey) (word1 = (ROTR64(word1, 8) + word2) ^ (roundkey), word2 = ROTL64(word2, 3) ^ word1)
 
 ///////////////////////////////////////////////
 // Global variables
@@ -231,7 +231,6 @@ int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void
 
 void setup() {
 
-
   pinMode(BUTTON_PIN, INPUT);
 
   Serial.begin(115200);
@@ -259,7 +258,9 @@ void setup() {
   // setup callback for onReceive - the callback will be triggered by an interrupt on _dio0 which calls onDio0Rise -> handleDio0Rise -> _onReceive
   //LoRa.onReceive(onReceive);
   // setup callback for onTxDone such that it can be put in receive mode af transmitting
-  //LoRa.onTxDone(onTxDone);
+  LoRa.onTxDone(onTxDone);
+
+  LoRa.onReceive(onReceive);
 
   if (!test) {
     LoRa.idle();                          // set standby mode
@@ -274,18 +275,12 @@ void setup() {
 
 void loop() {
   byte buttonState = digitalRead(BUTTON_PIN);
-  // wait for 2000 msec
-  if (!test) {
-    /*if (waited(2000)) {
-      transmitMessage(false);
-      }*/
-    if (buttonState == HIGH) {
-      transmitMessage(false);
-      delay(500);
-    }
-  } else {
-    delay(1000);
+  
+  if (buttonState == HIGH) {
     transmitMessage(false);
+    delay(200);
+    LoRa.disableInvertIQ();
+    LoRa.idle();
   }
 }
 
@@ -299,39 +294,22 @@ bool waited(int interval) {
   return false;
 }
 
-/*
-  void onReceive(int packetSize) {
-  String message = "";
-
-  while (LoRa.available()) {
-    message += (char)LoRa.read();
-  }
-
-  Serial.print("Node received: ");
-  Serial.println(message);
-  }
-
-  void onTxDone() {
-  Serial.println("I'm here! D:");
+void onTxDone() {
+  Serial.println("txDone:");
   LoRa.enableInvertIQ();
   LoRa.receive();
+}
 
-  while (waited(5000)) {
-    Serial.println("We didn't start the fire, it was always burning");
-    int packetSize = LoRa.parsePacket();
-    if (packetSize) {
-      Serial.print("received packet   ");
-
-      while (LoRa.available()) {
-        Serial.print((char)LoRa.read());
-      }
-    }
+void onReceive(int packetSize) {
+  // read packet
+  for (int i = 0; i < packetSize; i++) {
+    Serial.print((char)LoRa.read());
   }
-  LoRa.disableInvertIQ();
-  LoRa.idle();
-  }*/
+}
 
 void transmitMessage(bool firstNonce) {
+  LoRa.disableInvertIQ();
+  LoRa.idle();
   uint8_t header_b1 = deviceAddress >> 4;
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
@@ -421,11 +399,13 @@ void transmitMessage(bool firstNonce) {
 }
 
 uint16_t getPayload() {
-  return (uint16_t)random(65535);
+  return 43690;             // equivalent to 1010101010101010
+  //return (uint16_t)random(65535);
 }
 
 uint16_t getFirstNonce() {
-  return (uint16_t)random(65535);
+  return 42069;
+  //return (uint16_t)random(65535);
 }
 
 uint8_t * blakePlaceholder(uint16_t payload) {
