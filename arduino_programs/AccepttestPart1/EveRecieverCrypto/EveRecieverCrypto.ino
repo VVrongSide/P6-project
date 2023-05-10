@@ -25,8 +25,9 @@
 //////////////////////////////////////////////
 // Variables
 
-bool replayAttack = true;
-bool forgeryAttack = false;
+bool replayAttack = false;
+bool forgeryAttack = true;
+int forgeryAttackType = 3;
 
 uint8_t header_b1;
 uint8_t header_b2;
@@ -287,7 +288,7 @@ void onReceive(int packetSize) {
   }
   else if (forgeryAttack && sequenceNum > 1) {
     delay(500);
-    forgeMessage(1, sequenceNum, payload);                                 // param: 1 = sequence number, 2 = payload, 3 = both
+    forgeMessage(forgeryAttackType, sequenceNum, payload);        // param: 1 = sequence number, 2 = payload, 3 = both
   }
 
 }
