@@ -237,6 +237,10 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT);
 
+  pinMode(DATA_PROCESS_PIN, OUTPUT);
+  pinMode(DATA_TRANSMIT_PIN, OUTPUT);
+  pinMode(DATA_RECEIVE_PIN, OUTPUT);
+
   Serial.begin(115200);
 
   if (!test) {
