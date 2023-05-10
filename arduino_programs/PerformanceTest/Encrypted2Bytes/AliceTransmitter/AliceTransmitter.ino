@@ -273,15 +273,11 @@ void setup() {
 }
 
 void loop() {
-  byte buttonState = digitalRead(BUTTON_PIN);
-  
-  if (buttonState == HIGH) {
-    transmitMessage(false);
-    delay(200);
-    LoRa.disableInvertIQ();
-    LoRa.idle();
-    digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
-  }
+  transmitMessage(false);
+  delay(200);
+  digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
+  LoRa.disableInvertIQ();
+  LoRa.idle();
 }
 
 bool waited(int interval) {
@@ -315,7 +311,7 @@ void transmitMessage(bool firstNonce) {
   LoRa.idle();
 
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                   // [START] Data processing
-  
+
   uint8_t header_b1 = deviceAddress >> 4;
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
@@ -324,24 +320,24 @@ void transmitMessage(bool firstNonce) {
   uint8_t mic[4];
 
   /*Serial.println("---------- Before encryption ----------");
-  Serial.print("Device Address:  ");
-  Serial.print(deviceAddress);
-  Serial.print("\t\t\t | ");
-  Serial.println("12 bits");
-  Serial.print("Sequence Num:    ");
-  Serial.print(sequenceNumber);
-  Serial.print("\t\t\t | ");
-  Serial.println("12 bits");*/
+    Serial.print("Device Address:  ");
+    Serial.print(deviceAddress);
+    Serial.print("\t\t\t | ");
+    Serial.println("12 bits");
+    Serial.print("Sequence Num:    ");
+    Serial.print(sequenceNumber);
+    Serial.print("\t\t\t | ");
+    Serial.println("12 bits");*/
 
   if (firstNonce) {
     payload = getFirstNonce();
 
     /*Serial.print("Nonce:           ");
-    Serial.print(payload);
-    Serial.print("\t\t\t | ");
-    Serial.print(sizeof(payload));
-    Serial.println(" bytes");*/
-    
+      Serial.print(payload);
+      Serial.print("\t\t\t | ");
+      Serial.print(sizeof(payload));
+      Serial.println(" bytes");*/
+
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
@@ -358,10 +354,10 @@ void transmitMessage(bool firstNonce) {
   } else {
     payload = getPayload();
     /*Serial.print("Plaintext:       ");
-    Serial.print(payload);
-    Serial.print("\t\t\t | ");
-    Serial.print(sizeof(payload));
-    Serial.println(" bytes");*/
+      Serial.print(payload);
+      Serial.print("\t\t\t | ");
+      Serial.print(sizeof(payload));
+      Serial.println(" bytes");*/
     payload = getCiphertext(payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
@@ -376,34 +372,34 @@ void transmitMessage(bool firstNonce) {
   digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
 
   /*Serial.println("----------- After encryption ----------");
-  Serial.print("Device Address:  ");
-  Serial.print(deviceAddress);
-  Serial.print("\t\t\t | ");
-  Serial.println("12 bits");
-  Serial.print("Sequence Num:    ");
-  Serial.print(sequenceNumber);
-  Serial.print("\t\t\t | ");
-  Serial.println("12 bits");
-  if (sequenceNumber > 1) {
+    Serial.print("Device Address:  ");
+    Serial.print(deviceAddress);
+    Serial.print("\t\t\t | ");
+    Serial.println("12 bits");
+    Serial.print("Sequence Num:    ");
+    Serial.print(sequenceNumber);
+    Serial.print("\t\t\t | ");
+    Serial.println("12 bits");
+    if (sequenceNumber > 1) {
     Serial.print("Ciphertext:      ");
     Serial.print(payload);
     Serial.print("\t\t\t | ");
     Serial.print(sizeof(payload));
     Serial.println(" bytes");
-  }
-  Serial.print("MIC:             ");
-  for (int i = 0; i < 4; i++) {
+    }
+    Serial.print("MIC:             ");
+    for (int i = 0; i < 4; i++) {
     Serial.print(mic[i]);
-  }
-  Serial.print("\t\t | ");
-  Serial.print(sizeof(mic));
-  Serial.println(" bytes");
-  Serial.print("Secret Key:      ");
-  for (int i = 0; i < 8; i++) {
+    }
+    Serial.print("\t\t | ");
+    Serial.print(sizeof(mic));
+    Serial.println(" bytes");
+    Serial.print("Secret Key:      ");
+    for (int i = 0; i < 8; i++) {
     Serial.print(secretKey[i]);
-  }
-  Serial.println();
-  Serial.println("---------------------------------------");*/
+    }
+    Serial.println();
+    Serial.println("---------------------------------------");*/
 
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);
 
