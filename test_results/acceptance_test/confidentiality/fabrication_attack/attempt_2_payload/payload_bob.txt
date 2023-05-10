@@ -1,0 +1,238 @@
+LoRa Receiver
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  1				|	12 bits
+Ciphertext:       16807				|	2 bytes
+MIC:              3520124128			|	4 bytes
+Secret key:       00000000		|
+----------------------------------------------
+
+
+..... Secret key derivation .....
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  2				|	12 bits
+Ciphertext:       17533				|	2 bytes
+MIC:              451042389			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  2				|	12 bits
+Plaintext:        19399				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  2				|	12 bits
+Ciphertext:       17623				|	2 bytes
+MIC:              451042389			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 2
+Expected: 3
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  3				|	12 bits
+Ciphertext:       60065				|	2 bytes
+MIC:              2146224148			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  3				|	12 bits
+Plaintext:        3473				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  3				|	12 bits
+Ciphertext:       59915				|	2 bytes
+MIC:              2146224148			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 3
+Expected: 4
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  4				|	12 bits
+Ciphertext:       33245				|	2 bytes
+MIC:              1513017090			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  4				|	12 bits
+Plaintext:        18143				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  4				|	12 bits
+Ciphertext:       33143				|	2 bytes
+MIC:              1513017090			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 4
+Expected: 5
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  5				|	12 bits
+Ciphertext:       206				|	2 bytes
+MIC:              1721587134			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  5				|	12 bits
+Plaintext:        64435				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  5				|	12 bits
+Ciphertext:       100				|	2 bytes
+MIC:              1721587134			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 5
+Expected: 6
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  6				|	12 bits
+Ciphertext:       33321				|	2 bytes
+MIC:              12854191217			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  6				|	12 bits
+Plaintext:        63182				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  6				|	12 bits
+Ciphertext:       33411				|	2 bytes
+MIC:              12854191217			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 6
+Expected: 7
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  7				|	12 bits
+Ciphertext:       46841				|	2 bytes
+MIC:              2307954234			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  7				|	12 bits
+Plaintext:        38109				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  7				|	12 bits
+Ciphertext:       46675				|	2 bytes
+MIC:              2307954234			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 7
+Expected: 8
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  8				|	12 bits
+Ciphertext:       53751				|	2 bytes
+MIC:              2001033049			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  8				|	12 bits
+Plaintext:        24803				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  8				|	12 bits
+Ciphertext:       53597				|	2 bytes
+MIC:              2001033049			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 8
+Expected: 9
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  9				|	12 bits
+Ciphertext:       36020				|	2 bytes
+MIC:              1222243170			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- After decryption --------------
+Device address:   696				|	12 bits
+Sequence number:  9				|	12 bits
+Plaintext:        34358				|	2 bytes
+----------------------------------------------
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  9				|	12 bits
+Ciphertext:       35870				|	2 bytes
+MIC:              1222243170			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+----------	 DROPPING PACKET	----------
+---------- Inconsistent sequence number ----------
+Received: 9
+Expected: 10
+
+------------------ Received ------------------
+Device address:   696				|	12 bits
+Sequence number:  10				|	12 bits
+Ciphertext:       52670				|	2 bytes
+MIC:              2021904882			|	4 bytes
+Secret key:       202159214115395204120		|
+----------------------------------------------
+
+-------------- DROPPING PACKET ---------------
+-------------- Inconsistent MIC --------------
+

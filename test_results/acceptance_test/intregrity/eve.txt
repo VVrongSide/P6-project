@@ -1,0 +1,72 @@
+LoRa Receiver
+LoRa Receiver
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  1			|	12 bits
+Ciphertext:       16807			|	2 bytes
+MIC:              600381568		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  2			|	12 bits
+Ciphertext:       17533			|	2 bytes
+MIC:              761851401		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  3			|	12 bits
+Ciphertext:       60065			|	2 bytes
+MIC:              3594393748		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  4			|	12 bits
+Ciphertext:       33245			|	2 bytes
+MIC:              2535369306		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  5			|	12 bits
+Ciphertext:       206			|	2 bytes
+MIC:              2896054050		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  6			|	12 bits
+Ciphertext:       33321			|	2 bytes
+MIC:              2151071705		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  7			|	12 bits
+Ciphertext:       46841			|	2 bytes
+MIC:              3863951082		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  8			|	12 bits
+Ciphertext:       53751			|	2 bytes
+MIC:              3362201137		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  9			|	12 bits
+Ciphertext:       36020			|	2 bytes
+MIC:              202830762		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------
+---------- Before decryption ----------
+Device address:   696			|	12 bits
+Sequence number:  10			|	12 bits
+Ciphertext:       52500			|	2 bytes
+MIC:              3401461842		|	4 bytes
+Secret key:       N/A			|
+----------------------------------------

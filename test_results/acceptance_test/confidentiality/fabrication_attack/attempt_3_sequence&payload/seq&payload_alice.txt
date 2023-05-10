@@ -1,0 +1,132 @@
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    1
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    1			 | 12 bits
+Ciphertext:      16807			 | 2 bytes
+MIC:             3520124128		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    2
+Plaintext:       19399
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    2			 | 12 bits
+Ciphertext:      17533			 | 2 bytes
+MIC:             451042389		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    3
+Plaintext:       3473
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    3			 | 12 bits
+Ciphertext:      60065			 | 2 bytes
+MIC:             2146224148		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    4
+Plaintext:       18143
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    4			 | 12 bits
+Ciphertext:      33245			 | 2 bytes
+MIC:             1513017090		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    5
+Plaintext:       64435
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    5			 | 12 bits
+Ciphertext:      206			 | 2 bytes
+MIC:             1721587134		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    6
+Plaintext:       63182
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    6			 | 12 bits
+Ciphertext:      33321			 | 2 bytes
+MIC:             12854191217		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    7
+Plaintext:       38109
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    7			 | 12 bits
+Ciphertext:      46841			 | 2 bytes
+MIC:             2307954234		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    8
+Plaintext:       24803
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    8			 | 12 bits
+Ciphertext:      53751			 | 2 bytes
+MIC:             2001033049		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    9
+Plaintext:       34358
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    9			 | 12 bits
+Ciphertext:      36020			 | 2 bytes
+MIC:             1222243170		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    10
+Plaintext:       31729
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    10			 | 12 bits
+Ciphertext:      52500			 | 2 bytes
+MIC:             2021904882		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+---------- Before encryption ----------
+Device Address:  696
+Sequence Num:    11
+Plaintext:       51630
+---------------------------------------
+----------- After encryption ----------
+Device Address:  696			 | 12 bits
+Sequence Num:    11			 | 12 bits
+Ciphertext:      34838			 | 2 bytes
+MIC:             17522550206		 | 4 bytes
+Secret Key:      202159214115395204120
+---------------------------------------
+
