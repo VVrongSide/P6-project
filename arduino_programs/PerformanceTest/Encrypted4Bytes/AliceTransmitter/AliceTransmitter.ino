@@ -279,16 +279,14 @@ void setup() {
 }
 
 void loop() {
-  byte buttonState = digitalRead(BUTTON_PIN);
+  //byte buttonState = digitalRead(BUTTON_PIN);
   
-  if (buttonState == HIGH) {
-    transmitMessage(false);
-    delay(200);
-    LoRa.disableInvertIQ();
-    LoRa.idle();
-    digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
-
-  }
+  transmitMessage(false);
+  delay(200);
+  digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
+  LoRa.disableInvertIQ();
+  LoRa.idle();
+  delay(1000);
 }
 
 bool waited(int interval) {
