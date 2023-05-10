@@ -584,21 +584,26 @@ void onReceive(int packetSize) {
       } else {
       }
     }
+    // Transmit packet
+    transmitPacket();
+    Serial.println("Hello world!");
   }
-  //transmitPacket();
+
+
 
 }
 
 void transmitPacket () {
   LoRa.enableInvertIQ();
   LoRa.idle();
-  for (int i = 0; i < 10; i++) {
-    delay(50);
-    Serial.println("transmitted!!!!!!!!!!!!!");
-    LoRa.beginPacket();
-    LoRa.print("hello");
-    LoRa.endPacket();
-  }
+  
+  delay(20);
+  Serial.println("INIATING TRANSMISSION");
+  LoRa.beginPacket();
+  LoRa.write(69);
+  LoRa.endPacket();
+  Serial.println("TRANSMISSION DONE");
   LoRa.disableInvertIQ();
   LoRa.receive();
+  return;
 }
