@@ -10,6 +10,10 @@
 
 #define BUTTON_PIN 4
 
+#define DATA_PROCESS_PIN 5    // data processing pin number
+#define DATA_TRANSMIT_PIN 6   // data transmitting pin number
+#define DATA_RECEIVE_PIN 7    // data receive pin number
+
 #define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
 #define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
 #define ROTL32(word, offset) (((word) << (offset)) | (word >> (32 - (offset))))
@@ -233,6 +237,12 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT);
 
+  pinMode(DATA_PROCESS_PIN, OUTPUT);
+  pinMode(DATA_TRANSMIT_PIN, OUTPUT);
+  pinMode(DATA_RECEIVE_PIN, OUTPUT);
+
+
+
   Serial.begin(115200);
 
   for (int i = 0; i < 20; i++) {
@@ -281,6 +291,8 @@ void loop() {
     delay(200);
     LoRa.disableInvertIQ();
     LoRa.idle();
+    digitalWrite(DATA_RECEIVE_PIN, LOW);                                    // [STOP] Wait for incoming data
+
   }
 }
 
@@ -295,9 +307,12 @@ bool waited(int interval) {
 }
 
 void onTxDone() {
-  Serial.println("txDone:");
+  //Serial.println("txDone:");
+  
+  digitalWrite(DATA_RECEIVE_PIN, HIGH);                                       // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
+  
 }
 
 void onReceive(int packetSize) {
@@ -311,11 +326,14 @@ void onReceive(int packetSize) {
 void transmitMessage(bool firstNonce) {
   LoRa.disableInvertIQ();
   LoRa.idle();
+
+  digitalWrite(DATA_PROCESS_PIN, HIGH);                                   // [START] Data processing
+
   uint8_t header_b1 = deviceAddress >> 4;
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  uint16_t payload[2];
   uint8_t mic[4];
 
   Serial.println("---------- Before encryption ----------");
@@ -329,12 +347,12 @@ void transmitMessage(bool firstNonce) {
   Serial.println("12 bits");
 
   if (firstNonce) {
-    payload = getFirstNonce();
+    payload[0] = getFirstNonce();
 
     Serial.print("Nonce:           ");
-    Serial.print(payload);
+    Serial.print(payload[0]);
     Serial.print("\t\t\t | ");
-    Serial.print(sizeof(payload));
+    Serial.print(sizeof(payload[0]));
     Serial.println(" bytes");
     
     uint8_t key[8];
@@ -342,7 +360,7 @@ void transmitMessage(bool firstNonce) {
       key[i] = rootKey[i];
     }
     uint8_t longNonce[8];
-    uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
+    uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
     blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
@@ -351,13 +369,16 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, rootKey, 16, micInput, 5);
     //mic = getMIC(payload, key);
   } else {
-    payload = getPayload();
+    uint16_t tempPayload[2];
+    getPayload(tempPayload);
     Serial.print("Plaintext:       ");
-    Serial.print(payload);
-    Serial.print("\t\t\t | ");
-    Serial.print(sizeof(payload));
+    for (int i = 0; i < 2; i++) {
+      Serial.print(tempPayload[i]);
+    }
+    Serial.print("\t\t | ");
+    Serial.print(sizeof(tempPayload));
     Serial.println(" bytes");
-    payload = getCiphertext(payload);
+    getCiphertext(tempPayload, payload);
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
@@ -365,8 +386,12 @@ void transmitMessage(bool firstNonce) {
 
   Serial.println("---------------------------------------");
 
-  uint8_t payload_b1 = payload >> 8;
-  uint8_t payload_b2 = payload;
+  uint8_t payload_b1 = payload[0] >> 8;
+  uint8_t payload_b2 = payload[0];
+  uint8_t payload_b3 = payload[1] >> 8;
+  uint8_t payload_b4 = payload[1];
+
+  digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
 
   Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
@@ -379,8 +404,9 @@ void transmitMessage(bool firstNonce) {
   Serial.println("12 bits");
   if (sequenceNumber > 1) {
     Serial.print("Ciphertext:      ");
-    Serial.print(payload);
-    Serial.print("\t\t\t | ");
+    Serial.print(payload[0]);
+    Serial.print(payload[1]);
+    Serial.print("\t\t | ");
     Serial.print(sizeof(payload));
     Serial.println(" bytes");
   }
@@ -398,50 +424,44 @@ void transmitMessage(bool firstNonce) {
   Serial.println();
   Serial.println("---------------------------------------");
 
+  digitalWrite(DATA_TRANSMIT_PIN, HIGH);
+  
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
   LoRa.write(header_b1);
   LoRa.write(header_b2);
   LoRa.write(header_b3);
   LoRa.write(payload_b1);
   LoRa.write(payload_b2);
+  LoRa.write(payload_b3);
+  LoRa.write(payload_b4);
   LoRa.write(mic[0]);
   LoRa.write(mic[1]);
   LoRa.write(mic[2]);
   LoRa.write(mic[3]);
   LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
 
+  digitalWrite(DATA_TRANSMIT_PIN, LOW);                                   // [STOP] Data transmission
+
   sequenceNumber++;
 }
 
-uint16_t getPayload() {
-  return 43690;             // equivalent to 1010101010101010
-  //return (uint16_t)random(65535);
+void getPayload(uint16_t payload[]) {
+  for (int i = 0; i < 2; i++) {
+    payload[i] = 43690;                     // equivalent to 1010101010101010
+  } 
 }
 
 uint16_t getFirstNonce() {
   return 42069;
-  //return (uint16_t)random(65535);
 }
 
-uint8_t * blakePlaceholder(uint16_t payload) {
-  static uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (uint8_t)(payload >> 8), (uint8_t)payload};
-  return hashedNonce;
-}
 
-uint16_t getCiphertext(uint16_t payload) {
+void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
 
   uint32_t msgKey = getMsgKey();
-  uint16_t msgKey16 = (uint16_t)msgKey;
 
-  uint16_t ciphertext = payload ^ msgKey16;
-
-  return ciphertext;
-}
-
-uint32_t getMIC(uint16_t ciphertext, uint8_t key[]) {
-  // insert blake hashing
-
-  return 12498167080045;
+  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey >> 16);
+  ciphertext[1] = payload[1] ^ (uint16_t)msgKey; 
 }
 
 uint32_t getMsgKey() {
