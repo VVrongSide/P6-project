@@ -483,7 +483,7 @@ void onReceive(int packetSize) {
           }
         }
 
-        Serial.println("\n----------\t Received\t ----------");
+        Serial.println("------------------ Received ------------------"); 
         Serial.print("Device address:   ");
         Serial.print(deviceAddress);
         Serial.println("\t\t\t\t|\t12 bits");
@@ -507,7 +507,7 @@ void onReceive(int packetSize) {
           Serial.print(devices[x].secretkey[k]);
         }
         Serial.println("\t\t|");
-        Serial.println("-----------------------------------------------");
+        Serial.println("----------------------------------------------");
         Serial.println();
 
         if (devices[x].seqNum >= sequenceNum) {
@@ -528,8 +528,8 @@ void onReceive(int packetSize) {
 
         for (int n = 0; n < 4; n++) {
           if (receiverGeneratedMic[n] != mic[n]) {
-            Serial.println("----------\t DROPPING PACKET\t----------");
-            Serial.println("---------- Inconsistent MIC ----------");
+            Serial.println("-------------- DROPPING PACKET ---------------");
+            Serial.println("-------------- Inconsistent MIC --------------");
             return;
           }
         }
@@ -543,7 +543,7 @@ void onReceive(int packetSize) {
           uint32_t msgKey = getMsgKey(IV, key);
           uint16_t text = payload ^ (uint16_t)msgKey;
 
-          Serial.println("---------\t After decryption\t ---------");
+          Serial.println("-------------- After decryption --------------");
           Serial.print("Device address:   ");
           Serial.print(deviceAddress);
           Serial.println("\t\t\t\t|\t12 bits");
@@ -555,7 +555,7 @@ void onReceive(int packetSize) {
           Serial.print("\t\t\t\t|\t");
           Serial.print(sizeof(text));
           Serial.println(" bytes");
-          Serial.println("--------------------------------------");
+          Serial.println("----------------------------------------------");
           Serial.println();
 
           //Serial.print("Received message: ");
