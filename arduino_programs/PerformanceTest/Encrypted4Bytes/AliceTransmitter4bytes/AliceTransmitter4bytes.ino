@@ -231,9 +231,6 @@ int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void
 
 ///////////////////////////////////////////////
 // Functions
-
-
-
 bool waited(int interval) {
   static unsigned long prevTime = 0;
   unsigned long currentTime = millis();
@@ -314,7 +311,7 @@ void transmitMessage(bool firstNonce) {
     Serial.print("\t\t | ");
     Serial.print(sizeof(tempPayload));
     Serial.println(" bytes");*/
-    getCiphertext(tempPayload, payload);
+    //getCiphertext(tempPayload, payload);                                                                  // TURN ENCRYPTION ON or OFF
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);

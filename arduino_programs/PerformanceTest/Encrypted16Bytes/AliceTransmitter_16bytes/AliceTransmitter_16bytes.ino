@@ -309,7 +309,7 @@ void transmitMessage(bool firstNonce) {
       Serial.print("\t | ");
       Serial.print(sizeof(tempPayload));
       Serial.println(" bytes");*/
-    getCiphertext(tempPayload, payload);
+    //getCiphertext(tempPayload, payload);                                                                      // TURN ENCRYPTION ON or OFF
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 16, micInput, 5);

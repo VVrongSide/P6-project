@@ -27,6 +27,8 @@
 ///////////////////////////////////////////////
 // Global variables
 
+static long int t1, t2, t3; 
+
 const long frequency = 8681E5;
 
 uint8_t rootKey[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
@@ -326,6 +328,7 @@ void onTxDone() {
   digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
+  //delay(200);
 }
 
 void onReceive(int packetSize) {
@@ -555,14 +558,15 @@ void setup() {
 
 }
 
-void loop() {
+void loop() {  
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
   transmitMessage(false);
+
   delay(200);
+  
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
- 
+  
   LoRa.disableInvertIQ();
   LoRa.idle();
-  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
-  
+  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
 }
