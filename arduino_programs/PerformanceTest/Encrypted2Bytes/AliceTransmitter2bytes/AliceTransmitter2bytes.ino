@@ -11,7 +11,7 @@
 
 #define DATA_PROCESS_PIN 3    // data processing pin number
 #define DATA_TRANSMIT_PIN 4   // data transmitting pin number
-#define DATA_RECEIVE_PIN 6    // data receive pin number
+#define DATA_RECEIVE_PIN 5    // data receive pin number
 
 #define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
 #define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
@@ -27,7 +27,8 @@
 ///////////////////////////////////////////////
 // Global variables
 
-static long int t1, t2, t3; 
+static long int t1, t2, t3, t4, t5;
+static long int t6 = 200; 
 
 const long frequency = 8681E5;
 
@@ -325,6 +326,10 @@ bool waited(int interval) {
 void onTxDone() {
   //Serial.println("txDone:");
   digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
+  t2 = millis();
+  t5 = (t2-t1);
+  t6 = t5 + 200;
+  
   digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
@@ -389,7 +394,7 @@ void transmitMessage(bool firstNonce) {
     Serial.print("\t\t\t | ");
     Serial.print(sizeof(payload));
     Serial.println(" bytes");*/
-    //payload = getCiphertext(payload);                                                                               // TURN ENCRYPTION ON or OFF
+    payload = getCiphertext(payload);                                                                               // TURN ENCRYPTION ON or OFF
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
@@ -401,6 +406,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t payload_b2 = payload;
 
   digitalWrite(DATA_PROCESS_PIN, LOW);                                                                  // [STOP] Data processing
+  t4 = millis();
 
   /*Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
@@ -431,7 +437,7 @@ void transmitMessage(bool firstNonce) {
   }
   Serial.println();
   Serial.println("---------------------------------------");*/
-
+  t1 = millis();
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                                          // [START] Data transmit
 
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
@@ -447,6 +453,7 @@ void transmitMessage(bool firstNonce) {
   LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
 
   sequenceNumber++;
+ 
 }
 
 uint16_t getPayload() {
@@ -558,11 +565,13 @@ void setup() {
 
 }
 
-void loop() {  
+void loop() {
+  t3 = millis();
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
   transmitMessage(false);
 
-  delay(200);
+  
+  delay(t6);
   
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
   

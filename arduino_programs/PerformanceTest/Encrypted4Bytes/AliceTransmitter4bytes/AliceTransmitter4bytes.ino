@@ -11,7 +11,7 @@
 
 #define DATA_PROCESS_PIN 3    // data processing pin number
 #define DATA_TRANSMIT_PIN 4   // data transmitting pin number
-#define DATA_RECEIVE_PIN 6    // data receive pin number
+#define DATA_RECEIVE_PIN 5    // data receive pin number
 
 #define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
 #define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
@@ -26,6 +26,9 @@
 
 ///////////////////////////////////////////////
 // Global variables
+
+static long int t1, t2, t3, t4, t5;
+static long int t6 = 200;
 
 const long frequency = 8681E5;
 
@@ -244,6 +247,11 @@ bool waited(int interval) {
 void onTxDone() {
   //Serial.println("txDone:");
   digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
+
+  t2 = millis();
+  t5 = (t2-t1);
+  t6 = t5 + 200;
+  
   digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
@@ -325,7 +333,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t payload_b4 = payload[1];
 
   digitalWrite(DATA_PROCESS_PIN, LOW);                                                  // [STOP] Data processing
-
+  t4 = millis();
   /*Serial.println("----------- After encryption ----------");
   Serial.print("Device Address:  ");
   Serial.print(deviceAddress);
@@ -356,7 +364,7 @@ void transmitMessage(bool firstNonce) {
   }
   Serial.println();
   Serial.println("---------------------------------------");*/
-
+  t1 = millis();
   digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                                  // [START] Data transmit
   
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
@@ -572,9 +580,12 @@ void setup() {
 }
 
 void loop() {
+  t3 = millis();
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
   transmitMessage(false);
-  delay(200);
+
+  delay(t6);
+  
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
 
   LoRa.disableInvertIQ();
