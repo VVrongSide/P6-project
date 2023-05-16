@@ -560,7 +560,12 @@ void setup() {
   }
 
   delay(500);
-
+  Serial.print("SP: ");
+  Serial.println(LoRa.getSpreadingFactor());
+  
+  Serial.print("BW: ");
+  Serial.println(LoRa.getSignalBandwidth());
+ 
   transmitMessage(true);      // send nonce to server and derive secret key
 
 }
