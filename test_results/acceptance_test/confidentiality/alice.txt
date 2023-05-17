@@ -19,7 +19,7 @@ Device Address:  696			 | 12 bits
 Sequence Num:    2			 | 12 bits
 Ciphertext:      17533			 | 2 bytes
 MIC:             451042389		 | 4 bytes
-Secret Key:      202159214115395204120
+Secret Key:      202159214115395204120\
 ---------------------------------------
 ---------- Before encryption ----------
 Device Address:  696
