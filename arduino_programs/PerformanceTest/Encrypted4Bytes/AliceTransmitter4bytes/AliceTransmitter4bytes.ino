@@ -245,7 +245,6 @@ bool waited(int interval) {
 }
 
 void onTxDone() {
-  //Serial.println("txDone:");
   digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
 
   t2 = millis();
@@ -319,7 +318,7 @@ void transmitMessage(bool firstNonce) {
     Serial.print("\t\t | ");
     Serial.print(sizeof(tempPayload));
     Serial.println(" bytes");*/
-    //getCiphertext(tempPayload, payload);                                                                  // TURN ENCRYPTION ON or OFF
+    getCiphertext(tempPayload, payload);                                                                  // TURN ENCRYPTION ON or OFF
 
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
@@ -536,8 +535,6 @@ void Block64Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundk
 
 
 void setup() {
-
-
   pinMode(DATA_PROCESS_PIN, OUTPUT);
   pinMode(DATA_TRANSMIT_PIN, OUTPUT);
   pinMode(DATA_RECEIVE_PIN, OUTPUT);
