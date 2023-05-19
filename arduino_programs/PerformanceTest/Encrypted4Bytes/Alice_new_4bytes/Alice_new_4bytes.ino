@@ -28,7 +28,7 @@
 // Global variables
 
 static long int t1, t2, t3, t4, t5;
-static long int t6 = 200; 
+static long int t6 = 200;
 
 const long frequency = 8681E5;
 
@@ -234,7 +234,6 @@ int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void
 
 ///////////////////////////////////////////////
 // Functions
-
 bool waited(int interval) {
   static unsigned long prevTime = 0;
   unsigned long currentTime = millis();
@@ -247,6 +246,7 @@ bool waited(int interval) {
 
 void onTxDone() {
   digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
+
   t2 = millis();
   t5 = (t2-t1);
   t6 = t5 + 200;
@@ -254,6 +254,7 @@ void onTxDone() {
   digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
+  
 }
 
 void onReceive(int packetSize) {
@@ -272,50 +273,54 @@ void transmitMessage(bool firstNonce) {
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  uint16_t payload[2];
   uint8_t mic[4];
 
   if (firstNonce) {
-    payload = getFirstNonce();
+    payload[0] = getFirstNonce();
 
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
     }
     uint8_t longNonce[8];
-    uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
+    uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
     blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
 
-    uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
-    blake2s(mic, 4, rootKey, 16, micInput, 5);
+    uint8_t micInput[7] = {header_b1, header_b2, header_b3,(uint8_t)payload >> 24,(uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, rootKey, 16, micInput, 7);
     //mic = getMIC(payload, key);
   } else {
-    getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
+    uint16_t tempPayload[2];
+    getPayload(tempPayload);
 
-    //payload = getCiphertext(payload); 
-    //getCiphertext(payload);                                                                               // TURN ENCRYPTION ON or OFF
+    //getCiphertext(tempPayload, payload);                                                                  // TURN ENCRYPTION ON or OFF
 
-    uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
-    blake2s(mic, 4, secretKey, 8, micInput, 5);
+    uint8_t micInput[7] = {header_b1, header_b2, header_b3,(uint8_t)payload >> 24,(uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 8, micInput, 7);
   }
 
-  uint8_t payload_b1 = payload >> 8;
-  uint8_t payload_b2 = payload;
+  uint8_t payload_b1 = payload[0] >> 8;
+  uint8_t payload_b2 = payload[0];
+  uint8_t payload_b3 = payload[1] >> 8;
+  uint8_t payload_b4 = payload[1];
 
-  digitalWrite(DATA_PROCESS_PIN, LOW);                                                                  // [STOP] Data processing
+  digitalWrite(DATA_PROCESS_PIN, LOW);                                                  // [STOP] Data processing
   t4 = millis();
 
   t1 = millis();
-  digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                                          // [START] Data transmit
-
+  digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                                  // [START] Data transmit
+  
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
   LoRa.write(header_b1);
   LoRa.write(header_b2);
   LoRa.write(header_b3);
   LoRa.write(payload_b1);
   LoRa.write(payload_b2);
+  LoRa.write(payload_b3);
+  LoRa.write(payload_b4);
   LoRa.write(mic[0]);
   LoRa.write(mic[1]);
   LoRa.write(mic[2]);
@@ -323,40 +328,25 @@ void transmitMessage(bool firstNonce) {
   LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
 
   sequenceNumber++;
- 
 }
-/*
-uint16_t getPayload() {                                                             ///////////////////////////////////////CHECK
-  return 43690;             // equivalent to 1010101010101010
-  //return (uint16_t)random(65535);
-}
-*/
-void getPayload(uint16_t payload) {                                                             ///////////////////////////////////////CHECK
-  payload = 43690;             // equivalent to 1010101010101010
-  //return (uint16_t)random(65535);
+
+void getPayload(uint16_t payload[]) {
+  for (int i = 0; i < 2; i++) {
+    payload[i] = 43690;                     // equivalent to 1010101010101010
+  } 
 }
 
 uint16_t getFirstNonce() {
   return 42069;
-  //return (uint16_t)random(65535);
 }
-/*
-uint16_t getCiphertext(uint16_t payload) {
+
+
+void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
 
   uint32_t msgKey = getMsgKey();
-  uint16_t msgKey16 = (uint16_t)msgKey;
 
-  uint16_t ciphertext = payload ^ msgKey16;
-
-  return ciphertext;
-}
-*/
-void getCiphertext(uint16_t payload) {
-
-  uint32_t msgKey = getMsgKey();
-  //uint16_t msgKey16 = (uint16_t)msgKey;
-
-  payload = payload ^ (uint16_t)msgKey;
+  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey >> 16);
+  ciphertext[1] = payload[1] ^ (uint16_t)msgKey; 
 }
 
 uint32_t getMsgKey() {
@@ -408,10 +398,10 @@ void getAddressSeqNum(uint8_t plaintext[]) {
   }
 }
 
-
 /*********************************************************/
 /************************* SPECK *************************/
 /*********************************************************/
+
 
 ///////////////////////////////////////////////
 // Word/byte conversion
@@ -486,12 +476,17 @@ void Block64Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundk
   }
 }
 
+/*********************************************************/
+/************************* MAIN  *************************/
+/*********************************************************/
 
 
 void setup() {
   pinMode(DATA_PROCESS_PIN, OUTPUT);
   pinMode(DATA_TRANSMIT_PIN, OUTPUT);
   pinMode(DATA_RECEIVE_PIN, OUTPUT);
+
+
 
   Serial.begin(115200);
 
@@ -523,7 +518,7 @@ void setup() {
   }
 
   delay(500);
- 
+
   transmitMessage(true);      // send nonce to server and derive secret key
 
 }
@@ -532,11 +527,13 @@ void loop() {
   t3 = millis();
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
   transmitMessage(false);
+
   delay(t6);
   
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
-  
+
   LoRa.disableInvertIQ();
   LoRa.idle();
-  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
+  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
+  
 }

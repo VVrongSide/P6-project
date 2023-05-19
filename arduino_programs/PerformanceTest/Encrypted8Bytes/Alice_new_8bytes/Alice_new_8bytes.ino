@@ -234,7 +234,6 @@ int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void
 
 ///////////////////////////////////////////////
 // Functions
-
 bool waited(int interval) {
   static unsigned long prevTime = 0;
   unsigned long currentTime = millis();
@@ -246,7 +245,9 @@ bool waited(int interval) {
 }
 
 void onTxDone() {
+  //Serial.println("txDone:");
   digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
+  
   t2 = millis();
   t5 = (t2-t1);
   t6 = t5 + 200;
@@ -254,6 +255,7 @@ void onTxDone() {
   digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
   LoRa.enableInvertIQ();
   LoRa.receive();
+
 }
 
 void onReceive(int packetSize) {
@@ -272,43 +274,103 @@ void transmitMessage(bool firstNonce) {
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  uint16_t payload[4];
   uint8_t mic[4];
+  /*
+  Serial.println("---------- Before encryption ----------");
+  Serial.print("Device Address:  ");
+  Serial.print(deviceAddress);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
+  Serial.print("Sequence Num:    ");
+  Serial.print(sequenceNumber);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
+  */
 
   if (firstNonce) {
-    payload = getFirstNonce();
-
+    payload[0] = getFirstNonce();
+    
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
     }
-    uint8_t longNonce[8];
-    uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
-    blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
+    
+    uint8_t longNonce[16];
+    uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
+    blake2s(&longNonce, 16, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
 
-    uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
-    blake2s(mic, 4, rootKey, 16, micInput, 5);
+    uint8_t micInput[11] = {header_b1, header_b2, header_b3,(uint8_t)payload >> 56,(uint8_t)payload >> 48,(uint8_t)payload >> 40,(uint8_t)payload >> 32,(uint8_t)payload >> 24,(uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 16, micInput, 11);
     //mic = getMIC(payload, key);
   } else {
-    getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
+    uint16_t tempPayload[4];
+    getPayload(tempPayload);
+    /*
+    Serial.print("Plaintext:       ");
+    for (int i = 0; i < 4; i++) {
+      Serial.print(tempPayload[i]);
+    }
+    Serial.print("\t\t | ");
+    Serial.print(sizeof(tempPayload));
+    Serial.println(" bytes");
+    */
+    
+    getCiphertext(tempPayload, payload);                                                                    // TURN ENCRYPTION ON or OFF
 
-    //payload = getCiphertext(payload); 
-    //getCiphertext(payload);                                                                               // TURN ENCRYPTION ON or OFF
-
-    uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
-    blake2s(mic, 4, secretKey, 8, micInput, 5);
+    uint8_t micInput[11] = {header_b1, header_b2, header_b3,(uint8_t)payload >> 56,(uint8_t)payload >> 48,(uint8_t)payload >> 40,(uint8_t)payload >> 32,(uint8_t)payload >> 24,(uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 16, micInput, 11);
   }
+  //Serial.println("---------------------------------------");
+  uint8_t payload_b1 = payload[0] >> 8;
+  uint8_t payload_b2 = payload[0];
+  uint8_t payload_b3 = payload[1] >> 8;
+  uint8_t payload_b4 = payload[1];
+  uint8_t payload_b5 = payload[2] >> 8;
+  uint8_t payload_b6 = payload[2];
+  uint8_t payload_b7 = payload[3] >> 8;
+  uint8_t payload_b8 = payload[3];
 
-  uint8_t payload_b1 = payload >> 8;
-  uint8_t payload_b2 = payload;
-
-  digitalWrite(DATA_PROCESS_PIN, LOW);                                                                  // [STOP] Data processing
+  digitalWrite(DATA_PROCESS_PIN, LOW);                                              // [STOP] Data processing
   t4 = millis();
-
+  /*
+  Serial.println("----------- After encryption ----------");
+  Serial.print("Device Address:  ");
+  Serial.print(deviceAddress);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
+  Serial.print("Sequence Num:    ");
+  Serial.print(sequenceNumber);
+  Serial.print("\t\t\t | ");
+  Serial.println("12 bits");
+  if (sequenceNumber > 1) {
+  Serial.print("Ciphertext:      ");
+  Serial.print(payload[0]);
+  Serial.print(payload[1]);
+  Serial.print(payload[2]);
+  Serial.print(payload[3]);
+  Serial.print("\t\t | ");
+  Serial.print(sizeof(payload));
+  Serial.println(" bytes");
+  }
+  Serial.print("MIC:             ");
+  for (int i = 0; i < 4; i++) {
+  Serial.print(mic[i]);
+  }
+  Serial.print("\t\t | ");
+  Serial.print(sizeof(mic));
+  Serial.println(" bytes");
+  Serial.print("Secret Key:      ");
+  for (int i = 0; i < 16; i++) {
+  Serial.print(secretKey[i]);
+  }
+  Serial.println();
+  Serial.println("---------------------------------------");
+  */
   t1 = millis();
-  digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                                          // [START] Data transmit
+  digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                              // [START] Data transmit
 
   LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
   LoRa.write(header_b1);
@@ -316,6 +378,12 @@ void transmitMessage(bool firstNonce) {
   LoRa.write(header_b3);
   LoRa.write(payload_b1);
   LoRa.write(payload_b2);
+  LoRa.write(payload_b3);
+  LoRa.write(payload_b4);
+  LoRa.write(payload_b5);
+  LoRa.write(payload_b6);
+  LoRa.write(payload_b7);
+  LoRa.write(payload_b8);
   LoRa.write(mic[0]);
   LoRa.write(mic[1]);
   LoRa.write(mic[2]);
@@ -323,79 +391,69 @@ void transmitMessage(bool firstNonce) {
   LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
 
   sequenceNumber++;
- 
 }
-/*
-uint16_t getPayload() {                                                             ///////////////////////////////////////CHECK
-  return 43690;             // equivalent to 1010101010101010
-  //return (uint16_t)random(65535);
-}
-*/
-void getPayload(uint16_t payload) {                                                             ///////////////////////////////////////CHECK
-  payload = 43690;             // equivalent to 1010101010101010
-  //return (uint16_t)random(65535);
+
+void getPayload(uint16_t payload[]) {
+  for (int i = 0; i < 2; i++) {
+    payload[i] = 43690;                     // equivalent to 1010101010101010
+  }
 }
 
 uint16_t getFirstNonce() {
   return 42069;
-  //return (uint16_t)random(65535);
-}
-/*
-uint16_t getCiphertext(uint16_t payload) {
-
-  uint32_t msgKey = getMsgKey();
-  uint16_t msgKey16 = (uint16_t)msgKey;
-
-  uint16_t ciphertext = payload ^ msgKey16;
-
-  return ciphertext;
-}
-*/
-void getCiphertext(uint16_t payload) {
-
-  uint32_t msgKey = getMsgKey();
-  //uint16_t msgKey16 = (uint16_t)msgKey;
-
-  payload = payload ^ (uint16_t)msgKey;
 }
 
-uint32_t getMsgKey() {
 
-  uint8_t plaintext[4];
-  uint32_t plaintextword[1];
-  uint8_t ciphertext[4];
-  uint32_t ciphertextword[1];
+void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
 
-  uint32_t secretkeyword[2];
-  uint32_t roundkey[22];
+  uint64_t msgKey[1];
+  
+  getMsgKey(msgKey);
 
-  getAddressSeqNum(plaintext);                             // DeviceAddress + SequenceNumber (uint8 array of length 4)
-  ConvertBW32(plaintext, plaintextword, 4);                 // input: uint8 array of length 4 // output: uint32 array of length 1
-  ConvertBW32(secretKey, secretkeyword, 8);
-  Expand64(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
-  Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
-  ConvertW32B(ciphertextword, ciphertext, 1);
-
-  uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
-                    ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];
-  return msgKey;
+  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey[0] >> 48);
+  ciphertext[1] = payload[1] ^ (uint16_t)(msgKey[0] >> 32);
+  ciphertext[2] = payload[2] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[3] = payload[3] ^ (uint16_t)msgKey[0];
 }
 
-void deriveSecretKey(uint8_t nonce[]) {
-  uint32_t nonceword[2];
+void getMsgKey(uint64_t msgKey[]) {
+
+  uint8_t plaintext[8];
+  uint32_t plaintextword[2];
   uint8_t ciphertext[8];
   uint32_t ciphertextword[2];
 
-  uint32_t rootKeyWord[4];
+  uint32_t secretkeyword[2];
   uint32_t roundkey[27];
 
-  ConvertBW32(nonce, nonceword, 8);
-  ConvertBW32(rootKey, rootKeyWord, 16);
-  Expand128(rootKeyWord, roundkey);
-  Block64Encrypt(nonceword, ciphertextword, roundkey);
+  getAddressSeqNum(plaintext);                             // DeviceAddress + SequenceNumber (uint8 array of length 4)
+  ConvertBW32(plaintext, plaintextword, 8);                 // input: uint8 array of length 4 // output: uint32 array of length 1
+  ConvertBW32(secretKey, secretkeyword, 16);
+  Expand128Block64(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
+  Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
   ConvertW32B(ciphertextword, ciphertext, 2);
 
-  for (int i = 0; i < 8; i++) {
+  msgKey = ((uint64_t)ciphertext[0] << 56) | ((uint64_t)ciphertext[1] << 48) |
+                    ((uint64_t)ciphertext[2] << 40) | ((uint64_t)ciphertext[3] << 32) |
+                    ((uint64_t)ciphertext[4] << 24) | ((uint64_t)ciphertext[5] << 16) |
+                    ((uint64_t)ciphertext[6] << 8) | ((uint64_t)ciphertext[7] << 0);
+}
+
+void deriveSecretKey(uint8_t nonce[]) {
+  uint64_t nonceword[2];
+  uint8_t ciphertext[16];
+  uint64_t ciphertextword[2];
+
+  uint64_t rootKeyWord[2];
+  uint64_t roundkey[32];
+
+  ConvertBW64(nonce, nonceword, 16);
+  ConvertBW64(rootKey, rootKeyWord, 16);
+  Expand128Block128(rootKeyWord, roundkey);
+  Block128Encrypt(nonceword, ciphertextword, roundkey);
+  ConvertW64B(ciphertextword, ciphertext, 2);
+
+  for (int i = 0; i < 16; i++) {
     secretKey[i] = ciphertext[i];
   }
 }
@@ -406,6 +464,9 @@ void getAddressSeqNum(uint8_t plaintext[]) {
   for (int i = 0; i < 4; i++) {
     plaintext[i] = (uint8_t)(plaintext32 >> 8 * i);
   }
+  for (int i = 4; i < 8; i++) {
+    plaintext[i] = 0x00;
+  }
 }
 
 
@@ -413,14 +474,14 @@ void getAddressSeqNum(uint8_t plaintext[]) {
 /************************* SPECK *************************/
 /*********************************************************/
 
+
 ///////////////////////////////////////////////
 // Word/byte conversion
 
 void ConvertBW32(uint8_t bytes[], uint32_t words[], int wordcount) {
   int i, j = 0;
   for (i = 0; i < wordcount / 4; i++) {
-    words[i] =  (uint32_t)bytes[j] | ((uint32_t)bytes[j + 1] << 8) |
-                ((uint32_t)bytes[j + 2] << 16) | ((uint32_t)bytes[j + 3] << 24);
+    words[i] = (uint32_t)bytes[j] | ((uint32_t)bytes[j + 1] << 8) | ((uint32_t)bytes[j + 2] << 16) | ((uint32_t)bytes[j + 3] << 24);
     j += 4;
   }
 }
@@ -428,7 +489,7 @@ void ConvertBW32(uint8_t bytes[], uint32_t words[], int wordcount) {
 void ConvertW32B(uint32_t words[], uint8_t bytes[], int wordcount) {
   int i, j = 0;
   for (i = 0; i < wordcount; i++) {
-    bytes[j] =   (uint8_t)words[i];
+    bytes[j] = (uint8_t)words[i];
     bytes[j + 1] = (uint8_t)(words[i] >> 8);
     bytes[j + 2] = (uint8_t)(words[i] >> 16);
     bytes[j + 3] = (uint8_t)(words[i] >> 24);
@@ -436,10 +497,33 @@ void ConvertW32B(uint32_t words[], uint8_t bytes[], int wordcount) {
   }
 }
 
+void ConvertW64B(uint64_t words[], uint8_t bytes[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount; i++) {
+    bytes[j] = (uint8_t)words[i];
+    bytes[j + 1] = (uint8_t)(words[i] >> 8);
+    bytes[j + 2] = (uint8_t)(words[i] >> 16);
+    bytes[j + 3] = (uint8_t)(words[i] >> 24);
+    bytes[j + 4] = (uint8_t)(words[i] >> 32);
+    bytes[j + 5] = (uint8_t)(words[i] >> 40);
+    bytes[j + 6] = (uint8_t)(words[i] >> 48);
+    bytes[j + 7] = (uint8_t)(words[i] >> 56);
+    j += 8;
+  }
+}
+
+void ConvertBW64(uint8_t bytes[], uint64_t words[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount / 8; i++) {
+    words[i] = (uint8_t)bytes[j] | ((uint8_t)bytes[j + 1] << 8) | ((uint8_t)bytes[j + 2] << 16) | ((uint8_t)bytes[j + 3] << 24) | ((uint8_t)bytes[j + 4] << 32) | ((uint8_t)bytes[j + 5] << 40) | ((uint8_t)bytes[j + 6] << 48) | ((uint8_t)bytes[j + 7] << 56);
+    j += 8;
+  }
+}
+
 ///////////////////////////////////////////////
 // Key Schedule
 
-void Expand64(uint32_t K[], uint32_t roundkey[]) {
+void Expand64Block64(uint32_t K[], uint32_t roundkey[]) {
   static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
   for (i = 0; i < 22;) {
     roundkey[i] = A;
@@ -451,7 +535,7 @@ void Expand64(uint32_t K[], uint32_t roundkey[]) {
   }
 }
 
-void Expand128(uint32_t K[], uint32_t roundkey[]) {
+void Expand128Block64(uint32_t K[], uint32_t roundkey[]) {
   static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
   for (i = 0; i < 27;) {
     roundkey[i] = A;
@@ -461,6 +545,16 @@ void Expand128(uint32_t K[], uint32_t roundkey[]) {
     roundkey[i] = A;
     EncryptRound32(D, A, i++);
   }
+}
+
+void Expand128Block128(uint64_t K[], uint64_t roundkey[]) {
+  static uint32_t i, B = K[1], A = K[0];
+
+  for (i = 0; i < 31;) {
+    roundkey[i] = A;
+    EncryptRound64(B, A, i++);
+  }
+  roundkey[i] = A;
 }
 
 ///////////////////////////////////////////////
@@ -486,6 +580,15 @@ void Block64Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundk
   }
 }
 
+void Block128Encrypt(uint64_t plaintext[], uint64_t ciphertext[], uint64_t roundkey[]) {
+  uint16_t i;
+
+  ciphertext[0] = plaintext[0];
+  ciphertext[1] = plaintext[1];
+  for (i = 0; i < 32;) {
+    EncryptRound64(ciphertext[1], ciphertext[0], roundkey[i++]);
+  }
+}
 
 
 void setup() {
@@ -523,7 +626,7 @@ void setup() {
   }
 
   delay(500);
- 
+
   transmitMessage(true);      // send nonce to server and derive secret key
 
 }
@@ -532,11 +635,12 @@ void loop() {
   t3 = millis();
   digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
   transmitMessage(false);
+  
   delay(t6);
   
   digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
-  
+ 
   LoRa.disableInvertIQ();
   LoRa.idle();
-  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF); 
+  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
 }
