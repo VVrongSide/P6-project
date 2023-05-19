@@ -1,0 +1,1866 @@
+################## byte16.txt ##################
+
+Time:		 19-05-2023 14:12:34
+Periods:	 153
+
+################# PERIODS #################
+###### Period no. 1 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.391280 joules
+Transmit energy:	 38.820369 joules
+Receive energy:		 19.743616 joules
+Total energy:		 58.955264 joules
+
+###### Period no. 2 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.416233 joules
+Transmit energy:	 38.912874 joules
+Receive energy:		 19.955397 joules
+Total energy:		 59.284503 joules
+
+###### Period no. 3 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.423523 joules
+Transmit energy:	 38.862937 joules
+Receive energy:		 19.989332 joules
+Total energy:		 59.275792 joules
+
+###### Period no. 4 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.402598 joules
+Transmit energy:	 38.916254 joules
+Receive energy:		 19.859388 joules
+Total energy:		 59.178240 joules
+
+###### Period no. 5 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.429617 joules
+Transmit energy:	 38.942233 joules
+Receive energy:		 20.095722 joules
+Total energy:		 59.467571 joules
+
+###### Period no. 6 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.416167 joules
+Transmit energy:	 38.959402 joules
+Receive energy:		 20.043194 joules
+Total energy:		 59.418763 joules
+
+###### Period no. 7 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.398602 joules
+Transmit energy:	 38.901484 joules
+Receive energy:		 20.005722 joules
+Total energy:		 59.305807 joules
+
+###### Period no. 8 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.433772 joules
+Transmit energy:	 39.006232 joules
+Receive energy:		 20.155692 joules
+Total energy:		 59.595696 joules
+
+###### Period no. 9 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.420788 joules
+Transmit energy:	 38.957803 joules
+Receive energy:		 19.843928 joules
+Total energy:		 59.222520 joules
+
+###### Period no. 10 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.403679 joules
+Transmit energy:	 38.899381 joules
+Receive energy:		 20.064935 joules
+Total energy:		 59.367996 joules
+
+###### Period no. 11 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.446660 joules
+Transmit energy:	 38.967815 joules
+Receive energy:		 20.074840 joules
+Total energy:		 59.489315 joules
+
+###### Period no. 12 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275220 sec
+--- Energy ---
+Process energy:		 0.408664 joules
+Transmit energy:	 38.922021 joules
+Receive energy:		 20.143897 joules
+Total energy:		 59.474582 joules
+
+###### Period no. 13 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.402242 joules
+Transmit energy:	 38.882912 joules
+Receive energy:		 19.863879 joules
+Total energy:		 59.149033 joules
+
+###### Period no. 14 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.422290 joules
+Transmit energy:	 38.879590 joules
+Receive energy:		 19.955807 joules
+Total energy:		 59.257686 joules
+
+###### Period no. 15 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.408926 joules
+Transmit energy:	 38.918202 joules
+Receive energy:		 20.144979 joules
+Total energy:		 59.472107 joules
+
+###### Period no. 16 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273250 sec
+--- Energy ---
+Process energy:		 0.421597 joules
+Transmit energy:	 38.943161 joules
+Receive energy:		 20.035572 joules
+Total energy:		 59.400330 joules
+
+###### Period no. 17 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.425389 joules
+Transmit energy:	 38.850113 joules
+Receive energy:		 20.027271 joules
+Total energy:		 59.302773 joules
+
+###### Period no. 18 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.398830 joules
+Transmit energy:	 38.922622 joules
+Receive energy:		 20.000360 joules
+Total energy:		 59.321813 joules
+
+###### Period no. 19 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.406293 joules
+Transmit energy:	 38.836058 joules
+Receive energy:		 19.990082 joules
+Total energy:		 59.232433 joules
+
+###### Period no. 20 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.419020 joules
+Transmit energy:	 38.867505 joules
+Receive energy:		 19.924596 joules
+Total energy:		 59.211121 joules
+
+###### Period no. 21 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.399529 joules
+Transmit energy:	 38.889362 joules
+Receive energy:		 20.112982 joules
+Total energy:		 59.401874 joules
+
+###### Period no. 22 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.409468 joules
+Transmit energy:	 38.859669 joules
+Receive energy:		 20.081032 joules
+Total energy:		 59.350169 joules
+
+###### Period no. 23 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273250 sec
+--- Energy ---
+Process energy:		 0.422950 joules
+Transmit energy:	 38.912878 joules
+Receive energy:		 19.818023 joules
+Total energy:		 59.153851 joules
+
+###### Period no. 24 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.402030 joules
+Transmit energy:	 38.907103 joules
+Receive energy:		 20.139529 joules
+Total energy:		 59.448661 joules
+
+###### Period no. 25 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.422250 joules
+Transmit energy:	 38.887470 joules
+Receive energy:		 19.803662 joules
+Total energy:		 59.113382 joules
+
+###### Period no. 26 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.427281 joules
+Transmit energy:	 38.981837 joules
+Receive energy:		 20.147652 joules
+Total energy:		 59.556769 joules
+
+###### Period no. 27 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.400272 joules
+Transmit energy:	 38.885922 joules
+Receive energy:		 20.010530 joules
+Total energy:		 59.296724 joules
+
+###### Period no. 28 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.424342 joules
+Transmit energy:	 38.868524 joules
+Receive energy:		 19.791802 joules
+Total energy:		 59.084668 joules
+
+###### Period no. 29 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275250 sec
+--- Energy ---
+Process energy:		 0.416480 joules
+Transmit energy:	 38.927452 joules
+Receive energy:		 20.054838 joules
+Total energy:		 59.398770 joules
+
+###### Period no. 30 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.406852 joules
+Transmit energy:	 38.929502 joules
+Receive energy:		 20.100347 joules
+Total energy:		 59.436701 joules
+
+###### Period no. 31 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.420732 joules
+Transmit energy:	 38.871979 joules
+Receive energy:		 20.060584 joules
+Total energy:		 59.353294 joules
+
+###### Period no. 32 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.405049 joules
+Transmit energy:	 38.896047 joules
+Receive energy:		 20.038215 joules
+Total energy:		 59.339310 joules
+
+###### Period no. 33 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.411237 joules
+Transmit energy:	 38.838866 joules
+Receive energy:		 19.932681 joules
+Total energy:		 59.182784 joules
+
+###### Period no. 34 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.422346 joules
+Transmit energy:	 38.900674 joules
+Receive energy:		 20.072234 joules
+Total energy:		 59.395253 joules
+
+###### Period no. 35 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273240 sec
+--- Energy ---
+Process energy:		 0.399618 joules
+Transmit energy:	 38.903530 joules
+Receive energy:		 19.895752 joules
+Total energy:		 59.198899 joules
+
+###### Period no. 36 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.416771 joules
+Transmit energy:	 38.848800 joules
+Receive energy:		 20.030040 joules
+Total energy:		 59.295610 joules
+
+###### Period no. 37 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.429305 joules
+Transmit energy:	 38.985958 joules
+Receive energy:		 20.143244 joules
+Total energy:		 59.558508 joules
+
+###### Period no. 38 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.405202 joules
+Transmit energy:	 38.940285 joules
+Receive energy:		 20.131761 joules
+Total energy:		 59.477248 joules
+
+###### Period no. 39 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.419536 joules
+Transmit energy:	 38.878593 joules
+Receive energy:		 19.912435 joules
+Total energy:		 59.210564 joules
+
+###### Period no. 40 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275250 sec
+--- Energy ---
+Process energy:		 0.408783 joules
+Transmit energy:	 38.864485 joules
+Receive energy:		 20.062229 joules
+Total energy:		 59.335498 joules
+
+###### Period no. 41 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.405899 joules
+Transmit energy:	 38.933203 joules
+Receive energy:		 19.997070 joules
+Total energy:		 59.336172 joules
+
+###### Period no. 42 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.422268 joules
+Transmit energy:	 38.944566 joules
+Receive energy:		 19.897123 joules
+Total energy:		 59.263956 joules
+
+###### Period no. 43 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.409151 joules
+Transmit energy:	 38.981917 joules
+Receive energy:		 20.195517 joules
+Total energy:		 59.586585 joules
+
+###### Period no. 44 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.405898 joules
+Transmit energy:	 38.873630 joules
+Receive energy:		 19.946780 joules
+Total energy:		 59.226308 joules
+
+###### Period no. 45 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.425636 joules
+Transmit energy:	 38.981317 joules
+Receive energy:		 20.062020 joules
+Total energy:		 59.468974 joules
+
+###### Period no. 46 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.405815 joules
+Transmit energy:	 38.899066 joules
+Receive energy:		 19.937396 joules
+Total energy:		 59.242277 joules
+
+###### Period no. 47 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.433334 joules
+Transmit energy:	 38.977930 joules
+Receive energy:		 19.902748 joules
+Total energy:		 59.314012 joules
+
+###### Period no. 48 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.411196 joules
+Transmit energy:	 38.887502 joules
+Receive energy:		 20.045806 joules
+Total energy:		 59.344504 joules
+
+###### Period no. 49 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.407325 joules
+Transmit energy:	 38.872001 joules
+Receive energy:		 19.794998 joules
+Total energy:		 59.074325 joules
+
+###### Period no. 50 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.439865 joules
+Transmit energy:	 38.949598 joules
+Receive energy:		 20.107047 joules
+Total energy:		 59.496510 joules
+
+###### Period no. 51 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.393330 joules
+Transmit energy:	 38.918057 joules
+Receive energy:		 19.913771 joules
+Total energy:		 59.225159 joules
+
+###### Period no. 52 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.418718 joules
+Transmit energy:	 38.909047 joules
+Receive energy:		 20.180962 joules
+Total energy:		 59.508728 joules
+
+###### Period no. 53 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201400 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.424944 joules
+Transmit energy:	 38.959109 joules
+Receive energy:		 20.158160 joules
+Total energy:		 59.542213 joules
+
+###### Period no. 54 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.397868 joules
+Transmit energy:	 38.940934 joules
+Receive energy:		 20.072528 joules
+Total energy:		 59.411330 joules
+
+###### Period no. 55 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.430558 joules
+Transmit energy:	 38.949122 joules
+Receive energy:		 20.097247 joules
+Total energy:		 59.476927 joules
+
+###### Period no. 56 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.420791 joules
+Transmit energy:	 38.924114 joules
+Receive energy:		 19.928028 joules
+Total energy:		 59.272933 joules
+
+###### Period no. 57 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275220 sec
+--- Energy ---
+Process energy:		 0.408789 joules
+Transmit energy:	 38.929274 joules
+Receive energy:		 20.061522 joules
+Total energy:		 59.399585 joules
+
+###### Period no. 58 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.438609 joules
+Transmit energy:	 38.969910 joules
+Receive energy:		 20.083341 joules
+Total energy:		 59.491860 joules
+
+###### Period no. 59 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202400 sec
+Total time:		 0.275250 sec
+--- Energy ---
+Process energy:		 0.406990 joules
+Transmit energy:	 38.898378 joules
+Receive energy:		 19.972389 joules
+Total energy:		 59.277756 joules
+
+###### Period no. 60 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.410480 joules
+Transmit energy:	 38.869438 joules
+Receive energy:		 19.835644 joules
+Total energy:		 59.115562 joules
+
+###### Period no. 61 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.431642 joules
+Transmit energy:	 38.927544 joules
+Receive energy:		 20.050563 joules
+Total energy:		 59.409750 joules
+
+###### Period no. 62 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.414129 joules
+Transmit energy:	 38.933680 joules
+Receive energy:		 19.973844 joules
+Total energy:		 59.321653 joules
+
+###### Period no. 63 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.417227 joules
+Transmit energy:	 38.823591 joules
+Receive energy:		 19.926933 joules
+Total energy:		 59.167751 joules
+
+###### Period no. 64 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.421228 joules
+Transmit energy:	 38.969452 joules
+Receive energy:		 20.137278 joules
+Total energy:		 59.527957 joules
+
+###### Period no. 65 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.400710 joules
+Transmit energy:	 38.877961 joules
+Receive energy:		 19.960069 joules
+Total energy:		 59.238741 joules
+
+###### Period no. 66 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.418010 joules
+Transmit energy:	 38.830333 joules
+Receive energy:		 19.874267 joules
+Total energy:		 59.122609 joules
+
+###### Period no. 67 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.423163 joules
+Transmit energy:	 38.933917 joules
+Receive energy:		 20.040648 joules
+Total energy:		 59.397727 joules
+
+###### Period no. 68 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.408614 joules
+Transmit energy:	 38.925322 joules
+Receive energy:		 20.040823 joules
+Total energy:		 59.374759 joules
+
+###### Period no. 69 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.429781 joules
+Transmit energy:	 38.946539 joules
+Receive energy:		 20.265648 joules
+Total energy:		 59.641969 joules
+
+###### Period no. 70 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.409079 joules
+Transmit energy:	 38.911307 joules
+Receive energy:		 19.916637 joules
+Total energy:		 59.237023 joules
+
+###### Period no. 71 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.412534 joules
+Transmit energy:	 38.904194 joules
+Receive energy:		 20.191304 joules
+Total energy:		 59.508032 joules
+
+###### Period no. 72 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.433663 joules
+Transmit energy:	 38.970490 joules
+Receive energy:		 20.125752 joules
+Total energy:		 59.529905 joules
+
+###### Period no. 73 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.404461 joules
+Transmit energy:	 38.920359 joules
+Receive energy:		 20.025004 joules
+Total energy:		 59.349824 joules
+
+###### Period no. 74 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.421404 joules
+Transmit energy:	 38.915397 joules
+Receive energy:		 19.861168 joules
+Total energy:		 59.197970 joules
+
+###### Period no. 75 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.420605 joules
+Transmit energy:	 38.926956 joules
+Receive energy:		 19.987456 joules
+Total energy:		 59.335016 joules
+
+###### Period no. 76 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275220 sec
+--- Energy ---
+Process energy:		 0.395019 joules
+Transmit energy:	 38.866807 joules
+Receive energy:		 19.954306 joules
+Total energy:		 59.216132 joules
+
+###### Period no. 77 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.420162 joules
+Transmit energy:	 38.907734 joules
+Receive energy:		 20.060504 joules
+Total energy:		 59.388400 joules
+
+###### Period no. 78 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.400489 joules
+Transmit energy:	 38.860989 joules
+Receive energy:		 19.960310 joules
+Total energy:		 59.221788 joules
+
+###### Period no. 79 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.409672 joules
+Transmit energy:	 38.840655 joules
+Receive energy:		 19.849708 joules
+Total energy:		 59.100035 joules
+
+###### Period no. 80 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.430899 joules
+Transmit energy:	 38.887156 joules
+Receive energy:		 19.987554 joules
+Total energy:		 59.305609 joules
+
+###### Period no. 81 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.402286 joules
+Transmit energy:	 38.880366 joules
+Receive energy:		 19.938978 joules
+Total energy:		 59.221631 joules
+
+###### Period no. 82 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.421840 joules
+Transmit energy:	 38.930777 joules
+Receive energy:		 20.047311 joules
+Total energy:		 59.399928 joules
+
+###### Period no. 83 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274220 sec
+--- Energy ---
+Process energy:		 0.414876 joules
+Transmit energy:	 38.871785 joules
+Receive energy:		 20.030771 joules
+Total energy:		 59.317432 joules
+
+###### Period no. 84 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.407284 joules
+Transmit energy:	 38.942360 joules
+Receive energy:		 19.863806 joules
+Total energy:		 59.213450 joules
+
+###### Period no. 85 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.429800 joules
+Transmit energy:	 38.906405 joules
+Receive energy:		 20.229492 joules
+Total energy:		 59.565697 joules
+
+###### Period no. 86 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.408133 joules
+Transmit energy:	 38.859479 joules
+Receive energy:		 19.911150 joules
+Total energy:		 59.178763 joules
+
+###### Period no. 87 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.405016 joules
+Transmit energy:	 38.879433 joules
+Receive energy:		 19.910541 joules
+Total energy:		 59.194990 joules
+
+###### Period no. 88 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274220 sec
+--- Energy ---
+Process energy:		 0.435382 joules
+Transmit energy:	 38.957373 joules
+Receive energy:		 19.957485 joules
+Total energy:		 59.350241 joules
+
+###### Period no. 89 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.402834 joules
+Transmit energy:	 38.933895 joules
+Receive energy:		 20.115492 joules
+Total energy:		 59.452221 joules
+
+###### Period no. 90 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.411011 joules
+Transmit energy:	 38.897074 joules
+Receive energy:		 20.209130 joules
+Total energy:		 59.517215 joules
+
+###### Period no. 91 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.421087 joules
+Transmit energy:	 38.849550 joules
+Receive energy:		 19.716188 joules
+Total energy:		 58.986825 joules
+
+###### Period no. 92 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.403629 joules
+Transmit energy:	 38.931223 joules
+Receive energy:		 19.990121 joules
+Total energy:		 59.324972 joules
+
+###### Period no. 93 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.421747 joules
+Transmit energy:	 38.915792 joules
+Receive energy:		 20.047247 joules
+Total energy:		 59.384786 joules
+
+###### Period no. 94 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.408339 joules
+Transmit energy:	 38.888759 joules
+Receive energy:		 19.960772 joules
+Total energy:		 59.257870 joules
+
+###### Period no. 95 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.403518 joules
+Transmit energy:	 38.935241 joules
+Receive energy:		 19.985550 joules
+Total energy:		 59.324309 joules
+
+###### Period no. 96 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.429300 joules
+Transmit energy:	 38.914887 joules
+Receive energy:		 20.184427 joules
+Total energy:		 59.528614 joules
+
+###### Period no. 97 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.398451 joules
+Transmit energy:	 38.869111 joules
+Receive energy:		 20.026759 joules
+Total energy:		 59.294321 joules
+
+###### Period no. 98 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.414393 joules
+Transmit energy:	 38.896993 joules
+Receive energy:		 19.995295 joules
+Total energy:		 59.306681 joules
+
+###### Period no. 99 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.417436 joules
+Transmit energy:	 38.914115 joules
+Receive energy:		 20.084123 joules
+Total energy:		 59.415675 joules
+
+###### Period no. 100 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.402499 joules
+Transmit energy:	 38.922968 joules
+Receive energy:		 20.064303 joules
+Total energy:		 59.389770 joules
+
+###### Period no. 101 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.411400 joules
+Transmit energy:	 38.878900 joules
+Receive energy:		 19.938295 joules
+Total energy:		 59.228595 joules
+
+###### Period no. 102 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274220 sec
+--- Energy ---
+Process energy:		 0.427388 joules
+Transmit energy:	 38.882911 joules
+Receive energy:		 19.986285 joules
+Total energy:		 59.296583 joules
+
+###### Period no. 103 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.406178 joules
+Transmit energy:	 38.944152 joules
+Receive energy:		 20.115238 joules
+Total energy:		 59.465568 joules
+
+###### Period no. 104 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.410472 joules
+Transmit energy:	 38.864360 joules
+Receive energy:		 19.993766 joules
+Total energy:		 59.268599 joules
+
+###### Period no. 105 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.425002 joules
+Transmit energy:	 38.942649 joules
+Receive energy:		 20.081650 joules
+Total energy:		 59.449300 joules
+
+###### Period no. 106 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.411349 joules
+Transmit energy:	 38.957258 joules
+Receive energy:		 20.044207 joules
+Total energy:		 59.412813 joules
+
+###### Period no. 107 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.435174 joules
+Transmit energy:	 38.982626 joules
+Receive energy:		 20.270170 joules
+Total energy:		 59.687970 joules
+
+###### Period no. 108 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.402679 joules
+Transmit energy:	 38.939418 joules
+Receive energy:		 20.198237 joules
+Total energy:		 59.540335 joules
+
+###### Period no. 109 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.417892 joules
+Transmit energy:	 38.930319 joules
+Receive energy:		 20.024522 joules
+Total energy:		 59.372733 joules
+
+###### Period no. 110 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.425314 joules
+Transmit energy:	 38.886718 joules
+Receive energy:		 20.054989 joules
+Total energy:		 59.367021 joules
+
+###### Period no. 111 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.410602 joules
+Transmit energy:	 38.884850 joules
+Receive energy:		 19.871755 joules
+Total energy:		 59.167207 joules
+
+###### Period no. 112 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.417380 joules
+Transmit energy:	 38.895439 joules
+Receive energy:		 19.977607 joules
+Total energy:		 59.290426 joules
+
+###### Period no. 113 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.405686 joules
+Transmit energy:	 38.873998 joules
+Receive energy:		 19.981293 joules
+Total energy:		 59.260977 joules
+
+###### Period no. 114 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.409986 joules
+Transmit energy:	 38.933427 joules
+Receive energy:		 19.979515 joules
+Total energy:		 59.322927 joules
+
+###### Period no. 115 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.431805 joules
+Transmit energy:	 38.914123 joules
+Receive energy:		 20.121249 joules
+Total energy:		 59.467176 joules
+
+###### Period no. 116 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.408772 joules
+Transmit energy:	 38.913041 joules
+Receive energy:		 19.927112 joules
+Total energy:		 59.248925 joules
+
+###### Period no. 117 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.420876 joules
+Transmit energy:	 38.919911 joules
+Receive energy:		 20.115484 joules
+Total energy:		 59.456271 joules
+
+###### Period no. 118 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273240 sec
+--- Energy ---
+Process energy:		 0.418452 joules
+Transmit energy:	 38.909964 joules
+Receive energy:		 19.928745 joules
+Total energy:		 59.257160 joules
+
+###### Period no. 119 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.400539 joules
+Transmit energy:	 38.913334 joules
+Receive energy:		 19.982985 joules
+Total energy:		 59.296857 joules
+
+###### Period no. 120 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.422119 joules
+Transmit energy:	 38.875365 joules
+Receive energy:		 19.845098 joules
+Total energy:		 59.142582 joules
+
+###### Period no. 121 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.409237 joules
+Transmit energy:	 38.932925 joules
+Receive energy:		 20.047369 joules
+Total energy:		 59.389531 joules
+
+###### Period no. 122 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.410182 joules
+Transmit energy:	 38.881581 joules
+Receive energy:		 20.025173 joules
+Total energy:		 59.316935 joules
+
+###### Period no. 123 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.426278 joules
+Transmit energy:	 38.834286 joules
+Receive energy:		 19.909932 joules
+Total energy:		 59.170496 joules
+
+###### Period no. 124 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.399034 joules
+Transmit energy:	 38.822758 joules
+Receive energy:		 19.928305 joules
+Total energy:		 59.150096 joules
+
+###### Period no. 125 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.425570 joules
+Transmit energy:	 38.914198 joules
+Receive energy:		 19.986756 joules
+Total energy:		 59.326523 joules
+
+###### Period no. 126 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274220 sec
+--- Energy ---
+Process energy:		 0.416688 joules
+Transmit energy:	 38.990587 joules
+Receive energy:		 19.986887 joules
+Total energy:		 59.394162 joules
+
+###### Period no. 127 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.402731 joules
+Transmit energy:	 38.851799 joules
+Receive energy:		 20.076805 joules
+Total energy:		 59.331335 joules
+
+###### Period no. 128 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.426789 joules
+Transmit energy:	 38.844283 joules
+Receive energy:		 19.901845 joules
+Total energy:		 59.172917 joules
+
+###### Period no. 129 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.403084 joules
+Transmit energy:	 38.953199 joules
+Receive energy:		 20.045987 joules
+Total energy:		 59.402270 joules
+
+###### Period no. 130 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.421514 joules
+Transmit energy:	 38.885506 joules
+Receive energy:		 19.946117 joules
+Total energy:		 59.253137 joules
+
+###### Period no. 131 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275250 sec
+--- Energy ---
+Process energy:		 0.419700 joules
+Transmit energy:	 38.925436 joules
+Receive energy:		 20.083417 joules
+Total energy:		 59.428553 joules
+
+###### Period no. 132 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.384968 joules
+Transmit energy:	 38.818776 joules
+Receive energy:		 19.852069 joules
+Total energy:		 59.055812 joules
+
+###### Period no. 133 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274220 sec
+--- Energy ---
+Process energy:		 0.430972 joules
+Transmit energy:	 38.898454 joules
+Receive energy:		 19.911061 joules
+Total energy:		 59.240487 joules
+
+###### Period no. 134 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.401087 joules
+Transmit energy:	 38.867548 joules
+Receive energy:		 20.033903 joules
+Total energy:		 59.302537 joules
+
+###### Period no. 135 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.413637 joules
+Transmit energy:	 38.889047 joules
+Receive energy:		 19.883554 joules
+Total energy:		 59.186237 joules
+
+###### Period no. 136 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.423498 joules
+Transmit energy:	 38.843591 joules
+Receive energy:		 19.937267 joules
+Total energy:		 59.204356 joules
+
+###### Period no. 137 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.401530 joules
+Transmit energy:	 38.922706 joules
+Receive energy:		 19.779593 joules
+Total energy:		 59.103829 joules
+
+###### Period no. 138 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.424653 joules
+Transmit energy:	 38.903157 joules
+Receive energy:		 20.013185 joules
+Total energy:		 59.340995 joules
+
+###### Period no. 139 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.400100 joules
+Transmit energy:	 38.870197 joules
+Receive energy:		 19.920712 joules
+Total energy:		 59.191009 joules
+
+###### Period no. 140 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.411047 joules
+Transmit energy:	 38.840607 joules
+Receive energy:		 19.895522 joules
+Total energy:		 59.147177 joules
+
+###### Period no. 141 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.417642 joules
+Transmit energy:	 38.923582 joules
+Receive energy:		 20.058376 joules
+Total energy:		 59.399599 joules
+
+###### Period no. 142 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274240 sec
+--- Energy ---
+Process energy:		 0.402845 joules
+Transmit energy:	 38.878721 joules
+Receive energy:		 19.872286 joules
+Total energy:		 59.153852 joules
+
+###### Period no. 143 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.432722 joules
+Transmit energy:	 38.906849 joules
+Receive energy:		 20.041685 joules
+Total energy:		 59.381256 joules
+
+###### Period no. 144 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273240 sec
+--- Energy ---
+Process energy:		 0.414134 joules
+Transmit energy:	 38.883357 joules
+Receive energy:		 19.847679 joules
+Total energy:		 59.145171 joules
+
+###### Period no. 145 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.428779 joules
+Transmit energy:	 38.890192 joules
+Receive energy:		 19.986786 joules
+Total energy:		 59.305756 joules
+
+###### Period no. 146 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.201390 sec
+Total time:		 0.274250 sec
+--- Energy ---
+Process energy:		 0.400562 joules
+Transmit energy:	 38.873919 joules
+Receive energy:		 19.990578 joules
+Total energy:		 59.265059 joules
+
+###### Period no. 147 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.201380 sec
+Total time:		 0.274230 sec
+--- Energy ---
+Process energy:		 0.421791 joules
+Transmit energy:	 38.884533 joules
+Receive energy:		 20.007376 joules
+Total energy:		 59.313700 joules
+
+###### Period no. 148 ######
+--- Time ---
+Process time:	 0.007460 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202380 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.413160 joules
+Transmit energy:	 38.883811 joules
+Receive energy:		 20.060473 joules
+Total energy:		 59.357445 joules
+
+###### Period no. 149 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065410 sec
+Receive time:	 0.200390 sec
+Total time:		 0.273250 sec
+--- Energy ---
+Process energy:		 0.409821 joules
+Transmit energy:	 38.880235 joules
+Receive energy:		 19.859432 joules
+Total energy:		 59.149489 joules
+
+###### Period no. 150 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275240 sec
+--- Energy ---
+Process energy:		 0.415838 joules
+Transmit energy:	 38.942491 joules
+Receive energy:		 20.075467 joules
+Total energy:		 59.433796 joules
+
+###### Period no. 151 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.200380 sec
+Total time:		 0.273230 sec
+--- Energy ---
+Process energy:		 0.408930 joules
+Transmit energy:	 38.890077 joules
+Receive energy:		 19.876799 joules
+Total energy:		 59.175806 joules
+
+###### Period no. 152 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065390 sec
+Receive time:	 0.202390 sec
+Total time:		 0.275230 sec
+--- Energy ---
+Process energy:		 0.435173 joules
+Transmit energy:	 38.941243 joules
+Receive energy:		 20.176456 joules
+Total energy:		 59.552872 joules
+
+###### Period no. 153 ######
+--- Time ---
+Process time:	 0.007450 sec
+Transmit time:	 0.065400 sec
+Receive time:	 0.039160 sec
+Total time:		 0.112010 sec
+--- Energy ---
+Process energy:		 0.405183 joules
+Transmit energy:	 38.898996 joules
+Receive energy:		 3.873280 joules
+Total energy:		 43.177459 joules
+
+#################  STATISTIC #################
+### MEAN ###
+--- Time ---
+Mean process time:	 0.007452 sec
+Mean transmit time:	 0.065398 sec
+Mean receive time:	 0.200600 sec
+Mean total time:	 0.273450 sec
+--- Energy ---
+Mean process energy:	 0.414660 joules
+Mean transmit energy:	 38.905264 joules
+Mean receive energy:	 19.896973 joules
+Mean total energy:	 59.216897 joules
+
+### VARIANCE ###
+--- Time ---
+Variance process time:	 0.000000000016
+Variance transmit time:	 0.000000000030
+Variance receive time:	 0.000173019602
+Variance total time:	 0.000173018213
+--- Energy ---
+Variance process energy:	 0.000129202102
+Variance transmit energy:	 0.001562755366
+Variance receive energy:	 1.711841143508
+Variance total energy:	 1.722107625368
