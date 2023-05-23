@@ -2,7 +2,7 @@ Imported files: ['byte2.csv', 'byte4.csv', 'byte8.csv', 'byte16.csv']
 
 File: byte2.csv  Periods: 155
 File: byte4.csv  Periods: 155
-File: byte8.csv  Periods: 155
+File: byte8.csv  Periods: 154
 File: byte16.csv         Periods: 153
 
 ###### byte2.csv ######
