@@ -492,6 +492,9 @@ void setup() {
   pinMode(DATA_PROCESS_PIN, OUTPUT);
   pinMode(DATA_TRANSMIT_PIN, OUTPUT);
   pinMode(DATA_RECEIVE_PIN, OUTPUT);
+  digitalWrite(DATA_PROCESS_PIN, LOW);
+  digitalWrite(DATA_TRANSMIT_PIN, LOW);
+  digitalWrite(DATA_RECEIVE_PIN, LOW);
 
   Serial.begin(115200);
 
