@@ -289,8 +289,8 @@ void transmitMessage(bool firstNonce) {
     blake2s(&longNonce, 16, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
 
-    uint8_t micInput[19] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
-    blake2s(mic, 4, secretKey, 16, micInput, 19);
+    uint8_t micInput[35] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 248, (uint8_t)payload >> 240, (uint8_t)payload >> 232, (uint8_t)payload >> 224, (uint8_t)payload >> 216, (uint8_t)payload >> 208, (uint8_t)payload >> 200, (uint8_t)payload >> 192, (uint8_t)payload >> 184, (uint8_t)payload >> 176, (uint8_t)payload >> 168, (uint8_t)payload >> 160, (uint8_t)payload >> 152, (uint8_t)payload >> 144, (uint8_t)payload >> 136, (uint8_t)payload >> 128, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 16, micInput, 35);
     //mic = getMIC(payload, key);
   } else {
     uint16_t tempPayload[16];       // CHANGED
@@ -298,7 +298,7 @@ void transmitMessage(bool firstNonce) {
 
     getCiphertext(tempPayload, payload);                                                                      // TURN ENCRYPTION ON or OFF
 
-    uint8_t micInput[19] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    uint8_t micInput[35] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 248, (uint8_t)payload >> 240, (uint8_t)payload >> 232, (uint8_t)payload >> 224, (uint8_t)payload >> 216, (uint8_t)payload >> 208, (uint8_t)payload >> 200, (uint8_t)payload >> 192, (uint8_t)payload >> 184, (uint8_t)payload >> 176, (uint8_t)payload >> 168, (uint8_t)payload >> 160, (uint8_t)payload >> 152, (uint8_t)payload >> 144, (uint8_t)payload >> 136, (uint8_t)payload >> 128, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 16, micInput, 19);
   }
 
