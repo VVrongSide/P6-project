@@ -1,0 +1,771 @@
+
+///////////////////////////////////////////////
+// Libraries to include
+
+#include <SPI.h>
+#include <LoRa.h>
+
+#include <LowPower.h>
+
+///////////////////////////////////////////////
+// Defines
+
+#define DATA_PROCESS_PIN 3    // data processing pin number
+#define DATA_TRANSMIT_PIN 4   // data transmitting pin number
+#define DATA_RECEIVE_PIN 5    // data receive pin number
+
+#define ROTL16(word, offset) (((word) << (offset)) | (word >> (16 - (offset))))
+#define ROTR16(word, offset) (((word) >> (offset)) | ((word) << (16 - (offset))))
+#define ROTL32(word, offset) (((word) << (offset)) | (word >> (32 - (offset))))
+#define ROTR32(word, offset) (((word) >> (offset)) | ((word) << (32 - (offset))))
+#define ROTL64(word, offset) (((word) << (offset)) | (word >> (64 - (offset))))
+#define ROTR64(word, offset) (((word) >> (offset)) | ((word) << (64 - (offset))))
+
+#define EncryptRound16(word1, word2, roundkey) (word1 = (ROTR16(word1, 8) + word2) ^ (roundkey), word2 = ROTL16(word2, 3) ^ word1)
+#define EncryptRound32(word1, word2, roundkey) (word1 = (ROTR32(word1, 8) + word2) ^ (roundkey), word2 = ROTL32(word2, 3) ^ word1)
+#define EncryptRound64(word1, word2, roundkey) (word1 = (ROTR64(word1, 8) + word2) ^ (roundkey), word2 = ROTL64(word2, 3) ^ word1)
+
+///////////////////////////////////////////////
+// Global variables
+
+static long int t1, t2, t3, t4, t5;
+static long int t6 = 200;
+
+const long frequency = 8681E5;
+
+uint8_t rootKey[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+uint8_t secretKey[8];
+
+uint16_t sequenceNumber = 1;      // the receiver expects a sequence number greater than 0
+uint16_t deviceAddress = 0x2B8;
+
+bool test = false;
+
+
+/*********************************************************/
+/************************* BLAKE *************************/
+/*********************************************************/
+
+// Little-endian byte access.
+typedef struct blake2s_ctx {
+  uint8_t b[64];                      // input buffer
+  uint32_t h[8];                      // chained state
+  uint32_t t[2];                      // total number of bytes
+  size_t c;                           // pointer for b[]
+  size_t outlen;                      // digest size
+};
+
+// Initialize the hashing context "ctx" with optional key "key".
+//      1 <= outlen <= 32 gives the digest size in bytes.
+//      Secret key (also <= 32 bytes) is optional (keylen = 0).
+int blake2s_init(blake2s_ctx *ctx, size_t outlen,
+                 const void *key, size_t keylen);    // secret key
+
+// Add "inlen" bytes from "in" into the hash.
+void blake2s_update(blake2s_ctx *ctx,   // context
+                    const void *in, size_t inlen);      // data to be hashed
+
+// Generate the message digest (size given in init).
+//      Result placed in "out".
+void blake2s_final(blake2s_ctx *ctx, void *out);
+
+// All-in-one convenience function.
+int blake2s(void *out, size_t outlen,   // return buffer for digest
+            const void *key, size_t keylen,     // optional secret key
+            const void *in, size_t inlen);      // data to be hashed
+
+
+#define B2S_GET32(p)                            \
+  (((uint32_t) ((uint8_t *) (p))[0]) ^        \
+   (((uint32_t) ((uint8_t *) (p))[1]) << 8) ^  \
+   (((uint32_t) ((uint8_t *) (p))[2]) << 16) ^ \
+   (((uint32_t) ((uint8_t *) (p))[3]) << 24))
+
+// Mixing function G.
+
+#define B2S_G(a, b, c, d, x, y) {   \
+    v[a] = v[a] + v[b] + x;         \
+    v[d] = ROTR32(v[d] ^ v[a], 16); \
+    v[c] = v[c] + v[d];             \
+    v[b] = ROTR32(v[b] ^ v[c], 12); \
+    v[a] = v[a] + v[b] + y;         \
+    v[d] = ROTR32(v[d] ^ v[a], 8);  \
+    v[c] = v[c] + v[d];             \
+    v[b] = ROTR32(v[b] ^ v[c], 7); }
+
+// Initialization Vector.
+
+static const uint32_t blake2s_iv[8] =
+{
+  0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
+  0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19
+};
+
+// Compression function. "last" flag indicates last block.
+
+static void blake2s_compress(struct blake2s_ctx *ctx, int last) {
+
+  const uint8_t sigma[10][16] = {
+    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+    { 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
+    { 11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4 },
+    { 7, 9, 3, 1, 13, 12, 11, 14, 2, 6, 5, 10, 4, 0, 15, 8 },
+    { 9, 0, 5, 7, 2, 4, 10, 15, 14, 1, 11, 12, 6, 8, 3, 13 },
+    { 2, 12, 6, 10, 0, 11, 8, 3, 4, 13, 7, 5, 15, 14, 1, 9 },
+    { 12, 5, 1, 15, 14, 13, 4, 10, 0, 7, 6, 3, 9, 2, 8, 11 },
+    { 13, 11, 7, 14, 12, 1, 3, 9, 5, 0, 15, 4, 8, 6, 2, 10 },
+    { 6, 15, 14, 9, 11, 3, 0, 8, 12, 2, 13, 7, 1, 4, 10, 5 },
+    { 10, 2, 8, 4, 7, 6, 1, 5, 15, 11, 9, 14, 3, 12, 13, 0 }
+  };
+  int i;
+  uint32_t v[16], m[16];
+
+  for (i = 0; i < 8; i++) {           // init work variables
+    v[i] = ctx->h[i];
+    v[i + 8] = blake2s_iv[i];
+  }
+
+  v[12] ^= ctx->t[0];                 // low 32 bits of offset
+  v[13] ^= ctx->t[1];                 // high 32 bits
+  if (last)                           // last block flag set ?
+    v[14] = ~v[14];
+
+  for (i = 0; i < 16; i++)            // get little-endian words
+    m[i] = B2S_GET32(&ctx->b[4 * i]);
+
+  for (i = 0; i < 10; i++) {          // ten rounds
+    B2S_G( 0, 4,  8, 12, m[sigma[i][ 0]], m[sigma[i][ 1]]);
+    B2S_G( 1, 5,  9, 13, m[sigma[i][ 2]], m[sigma[i][ 3]]);
+    B2S_G( 2, 6, 10, 14, m[sigma[i][ 4]], m[sigma[i][ 5]]);
+    B2S_G( 3, 7, 11, 15, m[sigma[i][ 6]], m[sigma[i][ 7]]);
+    B2S_G( 0, 5, 10, 15, m[sigma[i][ 8]], m[sigma[i][ 9]]);
+    B2S_G( 1, 6, 11, 12, m[sigma[i][10]], m[sigma[i][11]]);
+    B2S_G( 2, 7,  8, 13, m[sigma[i][12]], m[sigma[i][13]]);
+    B2S_G( 3, 4,  9, 14, m[sigma[i][14]], m[sigma[i][15]]);
+  }
+
+  for ( i = 0; i < 8; ++i )
+    ctx->h[i] ^= v[i] ^ v[i + 8];
+}
+
+// Initialize the hashing context "ctx" with optional key "key".
+//      1 <= outlen <= 32 gives the digest size in bytes.
+//      Secret key (also <= 32 bytes) is optional (keylen = 0).
+
+int blake2s_init(blake2s_ctx *ctx, size_t outlen,
+                 const void *key, size_t keylen)     // (keylen=0: no key)
+{
+  size_t i;
+
+  if (outlen == 0 || outlen > 32 || keylen > 32)
+    return -1;                      // illegal parameters
+
+  for (i = 0; i < 8; i++)             // state, "param block"
+    ctx->h[i] = blake2s_iv[i];
+  ctx->h[0] ^= 0x01010000 ^ (keylen << 8) ^ outlen;
+
+  ctx->t[0] = 0;                      // input count low word
+  ctx->t[1] = 0;                      // input count high word
+  ctx->c = 0;                         // pointer within buffer
+  ctx->outlen = outlen;
+
+  for (i = keylen; i < 64; i++)       // zero input block
+    ctx->b[i] = 0;
+  if (keylen > 0) {
+    blake2s_update(ctx, key, keylen);
+    ctx->c = 64;                    // at the end
+  }
+
+  return 0;
+}
+
+// Add "inlen" bytes from "in" into the hash.
+
+void blake2s_update(blake2s_ctx *ctx,
+                    const void *in, size_t inlen)       // data bytes
+{
+  size_t i;
+
+  for (i = 0; i < inlen; i++) {
+    if (ctx->c == 64) {             // buffer full ?
+      ctx->t[0] += ctx->c;        // add counters
+      if (ctx->t[0] < ctx->c)     // carry overflow ?
+        ctx->t[1]++;            // high word
+      blake2s_compress(ctx, 0);   // compress (not last)
+      ctx->c = 0;                 // counter to zero
+    }
+    ctx->b[ctx->c++] = ((const uint8_t *) in)[i];
+  }
+}
+
+// Generate the message digest (size given in init).
+//      Result placed in "out".
+
+void blake2s_final(blake2s_ctx *ctx, void *out)
+{
+  size_t i;
+
+  ctx->t[0] += ctx->c;                // mark last block offset
+  if (ctx->t[0] < ctx->c)             // carry overflow
+    ctx->t[1]++;                    // high word
+
+  while (ctx->c < 64)                 // fill up with zeros
+    ctx->b[ctx->c++] = 0;
+  blake2s_compress(ctx, 1);           // final block flag = 1
+
+  // little endian convert and store
+  for (i = 0; i < ctx->outlen; i++) {
+    ((uint8_t *) out)[i] =
+      (ctx->h[i >> 2] >> (8 * (i & 3))) & 0xFF;
+  }
+}
+
+int blake2s(void *out, size_t outlen, const void *key, size_t keylen, const void *in, size_t inlen) {
+
+  blake2s_ctx ctx;
+
+  if (blake2s_init(&ctx, outlen, key, keylen))
+    return -1;
+  blake2s_update(&ctx, in, inlen);
+  blake2s_final(&ctx, out);
+
+  return 0;
+}
+
+
+///////////////////////////////////////////////
+// Functions
+bool waited(int interval) {
+  static unsigned long prevTime = 0;
+  unsigned long currentTime = millis();
+  if (interval <= currentTime - prevTime) {
+    prevTime = currentTime;
+    return true;
+  }
+  return false;
+}
+
+void onTxDone() {
+  digitalWrite(DATA_TRANSMIT_PIN, LOW);                                                   // [STOP] Data transmission
+
+  t2 = millis();
+  t5 = (t2 - t1);
+  t6 = t5 + 200;
+
+  digitalWrite(DATA_RECEIVE_PIN, HIGH);                                                   // [START] Wait for incoming data
+  LoRa.enableInvertIQ();
+  LoRa.receive();
+
+}
+
+void onReceive(int packetSize) {
+  // read packet
+  for (int i = 0; i < packetSize; i++) {
+    Serial.print((char)LoRa.read());
+  }
+  Serial.println();
+}
+
+void transmitMessage(bool firstNonce) {
+  LoRa.disableInvertIQ();
+  LoRa.idle();
+
+  uint8_t header_b1 = deviceAddress >> 4;
+  uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
+  uint8_t header_b3 = sequenceNumber;
+
+  uint16_t payload[32];             // CHANGED
+  uint8_t mic[4];
+
+  if (firstNonce) {
+    payload[0] = getFirstNonce();
+
+    uint8_t key[8];
+    for (int i = 0; i < 8; i++) {
+      key[i] = rootKey[i];
+    }
+
+    uint8_t longNonce[16];
+    uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
+    blake2s(&longNonce, 16, rootKey, 16, nonceInput, 2);
+    deriveSecretKey(longNonce);
+
+    uint8_t micInput[19] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 16, micInput, 19);
+    //mic = getMIC(payload, key);
+  } else {
+    uint16_t tempPayload[32];       // CHANGED
+    getPayload(tempPayload);
+
+    getCiphertext(tempPayload, payload);                                                                      // TURN ENCRYPTION ON or OFF
+
+    uint8_t micInput[19] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
+    blake2s(mic, 4, secretKey, 16, micInput, 19);
+  }
+
+  uint8_t payload_b1 = payload[0] >> 8;
+  uint8_t payload_b2 = payload[0];
+  uint8_t payload_b3 = payload[1] >> 8;
+  uint8_t payload_b4 = payload[1];
+  uint8_t payload_b5 = payload[2] >> 8;
+  uint8_t payload_b6 = payload[2];
+  uint8_t payload_b7 = payload[3] >> 8;
+  uint8_t payload_b8 = payload[3];
+  uint8_t payload_b9 = payload[4] >> 8;
+  uint8_t payload_b10 = payload[4];
+  uint8_t payload_b11 = payload[5] >> 8;
+  uint8_t payload_b12 = payload[5];
+  uint8_t payload_b13 = payload[6] >> 8;
+  uint8_t payload_b14 = payload[6];
+  uint8_t payload_b15 = payload[7] >> 8;
+  uint8_t payload_b16 = payload[7];
+  uint8_t payload_b17 = payload[8] >> 8;        // CHANGED from here
+  uint8_t payload_b18 = payload[8];
+  uint8_t payload_b19 = payload[9] >> 8;
+  uint8_t payload_b20 = payload[9];
+  uint8_t payload_b21 = payload[10] >> 8;
+  uint8_t payload_b22 = payload[10];
+  uint8_t payload_b23 = payload[11] >> 8;
+  uint8_t payload_b24 = payload[11];
+  uint8_t payload_b25 = payload[12] >> 8;
+  uint8_t payload_b26 = payload[12];
+  uint8_t payload_b27 = payload[13] >> 8;
+  uint8_t payload_b28 = payload[13];
+  uint8_t payload_b29 = payload[14] >> 8;
+  uint8_t payload_b30 = payload[14];
+  uint8_t payload_b31 = payload[15] >> 8;
+  uint8_t payload_b32 = payload[15];
+  uint8_t payload_b33 = payload[16] >> 8;
+  uint8_t payload_b34 = payload[16];
+  uint8_t payload_b35 = payload[17] >> 8;
+  uint8_t payload_b36 = payload[17];
+  uint8_t payload_b37 = payload[18] >> 8;
+  uint8_t payload_b38 = payload[18];
+  uint8_t payload_b39 = payload[19] >> 8;
+  uint8_t payload_b40 = payload[19];
+  uint8_t payload_b41 = payload[20] >> 8;
+  uint8_t payload_b42 = payload[20];
+  uint8_t payload_b43 = payload[21] >> 8;
+  uint8_t payload_b44 = payload[21];
+  uint8_t payload_b45 = payload[22] >> 8;
+  uint8_t payload_b46 = payload[22];
+  uint8_t payload_b47 = payload[23] >> 8;
+  uint8_t payload_b48 = payload[23];
+  uint8_t payload_b49 = payload[24] >> 8;
+  uint8_t payload_b50 = payload[24];
+  uint8_t payload_b51 = payload[25] >> 8;
+  uint8_t payload_b52 = payload[25];
+  uint8_t payload_b53 = payload[26] >> 8;
+  uint8_t payload_b54 = payload[26];
+  uint8_t payload_b55 = payload[27] >> 8;
+  uint8_t payload_b56 = payload[27];
+  uint8_t payload_b57 = payload[28] >> 8;
+  uint8_t payload_b58 = payload[28];
+  uint8_t payload_b59 = payload[29] >> 8;
+  uint8_t payload_b60 = payload[29];
+  uint8_t payload_b61 = payload[30] >> 8;
+  uint8_t payload_b62 = payload[30];
+  uint8_t payload_b63 = payload[31] >> 8;
+  uint8_t payload_b64 = payload[31];          // CHANGED to here
+
+  digitalWrite(DATA_PROCESS_PIN, LOW);                                      // [STOP] Data processing
+  t4 = millis();
+
+  t1 = millis();
+  digitalWrite(DATA_TRANSMIT_PIN, HIGH);                                            // [START] Data transmit
+
+  LoRa.beginPacket();							// beginPacket(implicitHeader = 1)
+  LoRa.write(header_b1);
+  LoRa.write(header_b2);
+  LoRa.write(header_b3);
+  LoRa.write(payload_b1);
+  LoRa.write(payload_b2);
+  LoRa.write(payload_b3);
+  LoRa.write(payload_b4);
+  LoRa.write(payload_b5);
+  LoRa.write(payload_b6);
+  LoRa.write(payload_b7);
+  LoRa.write(payload_b8);
+  LoRa.write(payload_b9);
+  LoRa.write(payload_b10);
+  LoRa.write(payload_b11);
+  LoRa.write(payload_b12);
+  LoRa.write(payload_b13);
+  LoRa.write(payload_b14);
+  LoRa.write(payload_b15);
+  LoRa.write(payload_b16);
+  LoRa.write(payload_b17);    // CHANGED from here
+  LoRa.write(payload_b18);
+  LoRa.write(payload_b19);
+  LoRa.write(payload_b20);
+  LoRa.write(payload_b21);
+  LoRa.write(payload_b22);
+  LoRa.write(payload_b23);
+  LoRa.write(payload_b24);
+  LoRa.write(payload_b25);
+  LoRa.write(payload_b26);
+  LoRa.write(payload_b27);
+  LoRa.write(payload_b28);
+  LoRa.write(payload_b29);
+  LoRa.write(payload_b30);
+  LoRa.write(payload_b31);
+  LoRa.write(payload_b32);
+  LoRa.write(payload_b33);
+  LoRa.write(payload_b34);
+  LoRa.write(payload_b35);
+  LoRa.write(payload_b36);
+  LoRa.write(payload_b37);
+  LoRa.write(payload_b38);
+  LoRa.write(payload_b39);
+  LoRa.write(payload_b40);
+  LoRa.write(payload_b41);
+  LoRa.write(payload_b42);
+  LoRa.write(payload_b43);
+  LoRa.write(payload_b44);
+  LoRa.write(payload_b45);
+  LoRa.write(payload_b46);
+  LoRa.write(payload_b47);
+  LoRa.write(payload_b48);
+  LoRa.write(payload_b49);   
+  LoRa.write(payload_b50);
+  LoRa.write(payload_b51);
+  LoRa.write(payload_b52);
+  LoRa.write(payload_b53);
+  LoRa.write(payload_b54);
+  LoRa.write(payload_b55);
+  LoRa.write(payload_b56);
+  LoRa.write(payload_b57);
+  LoRa.write(payload_b58);
+  LoRa.write(payload_b59);
+  LoRa.write(payload_b60);
+  LoRa.write(payload_b61);
+  LoRa.write(payload_b62);
+  LoRa.write(payload_b63);
+  LoRa.write(payload_b64);      // CHANGED TO HERE
+  LoRa.write(mic[0]);
+  LoRa.write(mic[1]);
+  LoRa.write(mic[2]);
+  LoRa.write(mic[3]);
+  LoRa.endPacket(true);							// endPacket(true)	// true = non-blocking mode
+
+  sequenceNumber++;
+}
+
+void getPayload(uint16_t payload[]) {
+  for (int i = 0; i < 4; i++) {
+    payload[i] = 43690;                     // equivalent to 1010101010101010
+  }
+}
+
+uint16_t getFirstNonce() {
+  return 42069;
+}
+
+
+void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
+
+  uint64_t msgKey[2];
+
+  getMsgKey(msgKey);
+
+  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey[0] >> 48);
+  ciphertext[1] = payload[1] ^ (uint16_t)(msgKey[0] >> 32);
+  ciphertext[2] = payload[2] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[3] = payload[3] ^ (uint16_t)msgKey[0];
+  ciphertext[4] = payload[4] ^ (uint16_t)(msgKey[1] >> 48);
+  ciphertext[5] = payload[5] ^ (uint16_t)(msgKey[1] >> 32);
+  ciphertext[6] = payload[6] ^ (uint16_t)(msgKey[1] >> 16);
+  ciphertext[7] = payload[7] ^ (uint16_t)msgKey[1];
+
+  getMsgKey(msgKey);                                                    // CHANGED : this is the same key as before but we do it again to "simulate" a longer key generation
+
+  ciphertext[8] = payload[8] ^   (uint16_t)(msgKey[0] >> 48);
+  ciphertext[9] = payload[9] ^   (uint16_t)(msgKey[0] >> 32);
+  ciphertext[10] = payload[10] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[11] = payload[11] ^ (uint16_t)msgKey[0];
+  ciphertext[12] = payload[12] ^ (uint16_t)(msgKey[1] >> 48);
+  ciphertext[13] = payload[13] ^ (uint16_t)(msgKey[1] >> 32);
+  ciphertext[14] = payload[14] ^ (uint16_t)(msgKey[1] >> 16);
+  ciphertext[15] = payload[15] ^ (uint16_t)msgKey[1];
+
+  getMsgKey(msgKey);
+
+  ciphertext[16] = payload[16] ^ (uint16_t)(msgKey[0] >> 48);
+  ciphertext[17] = payload[17] ^ (uint16_t)(msgKey[0] >> 32);
+  ciphertext[18] = payload[18] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[19] = payload[19] ^ (uint16_t)msgKey[0];
+  ciphertext[20] = payload[20] ^ (uint16_t)(msgKey[1] >> 48);
+  ciphertext[21] = payload[21] ^ (uint16_t)(msgKey[1] >> 32);
+  ciphertext[22] = payload[22] ^ (uint16_t)(msgKey[1] >> 16);
+  ciphertext[23] = payload[23] ^ (uint16_t)msgKey[1];
+
+  getMsgKey(msgKey);
+
+  ciphertext[24] = payload[24] ^ (uint16_t)(msgKey[0] >> 48);
+  ciphertext[25] = payload[25] ^ (uint16_t)(msgKey[0] >> 32);
+  ciphertext[26] = payload[26] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[27] = payload[27] ^ (uint16_t)msgKey[0];
+  ciphertext[28] = payload[28] ^ (uint16_t)(msgKey[1] >> 48);
+  ciphertext[29] = payload[29] ^ (uint16_t)(msgKey[1] >> 32);
+  ciphertext[30] = payload[30] ^ (uint16_t)(msgKey[1] >> 16);
+  ciphertext[31] = payload[31] ^ (uint16_t)msgKey[1];
+  
+}
+
+void getMsgKey(uint64_t msgKey[]) {
+
+  uint8_t plaintext[16];
+  uint64_t plaintextword[2];
+  uint8_t ciphertext[16];
+  uint64_t ciphertextword[2];
+
+  uint64_t secretkeyword[2];
+  uint64_t roundkey[32];
+
+  getAddressSeqNum(plaintext);                             // DeviceAddress + SequenceNumber (uint8 array of length 4)
+  ConvertBW64(plaintext, plaintextword, 16);                 // input: uint8 array of length 4 // output: uint32 array of length 1
+  ConvertBW64(secretKey, secretkeyword, 16);
+  Expand128Block128(secretkeyword, roundkey);                        // input: uint32 array of length 2 // output: uint32 array of length 22
+  Block128Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
+  ConvertW64B(ciphertextword, ciphertext, 2);
+
+  msgKey[0] = ((uint64_t)ciphertext[0] << 56) | ((uint64_t)ciphertext[1] << 48) |
+              ((uint64_t)ciphertext[2] << 40) | ((uint64_t)ciphertext[3] << 32) |
+              ((uint64_t)ciphertext[4] << 24) | ((uint64_t)ciphertext[5] << 16) |
+              ((uint64_t)ciphertext[6] << 8) | ((uint64_t)ciphertext[7] << 0);
+
+  msgKey[1] = ((uint64_t)ciphertext[8] << 120) | ((uint64_t)ciphertext[9] << 112) |
+              ((uint64_t)ciphertext[10] << 104) | ((uint64_t)ciphertext[11] << 96) |
+              ((uint64_t)ciphertext[12] << 88) | ((uint64_t)ciphertext[13] << 80) |
+              ((uint64_t)ciphertext[14] << 72) | ((uint64_t)ciphertext[15] << 64);
+}
+
+void deriveSecretKey(uint8_t nonce[]) {
+  uint64_t nonceword[2];
+  uint8_t ciphertext[16];
+  uint64_t ciphertextword[2];
+
+  uint64_t rootKeyWord[2];
+  uint64_t roundkey[32];
+
+  ConvertBW64(nonce, nonceword, 16);
+  ConvertBW64(rootKey, rootKeyWord, 16);
+  Expand128Block128(rootKeyWord, roundkey);
+  Block128Encrypt(nonceword, ciphertextword, roundkey);
+  ConvertW64B(ciphertextword, ciphertext, 2);
+
+  for (int i = 0; i < 16; i++) {
+    secretKey[i] = ciphertext[i];
+  }
+}
+
+// returns device address and sequence number - used as plaintext in SPECK
+void getAddressSeqNum(uint8_t plaintext[]) {
+  uint32_t plaintext32 = (uint32_t)(deviceAddress << 20) | (uint32_t)sequenceNumber;
+  for (int i = 0; i < 4; i++) {
+    plaintext[i] = (uint8_t)(plaintext32 >> 8 * i);
+  }
+  for (int i = 4; i < 16; i++) {
+    plaintext[i] = 0x00;
+  }
+}
+
+
+/*********************************************************/
+/************************* SPECK *************************/
+/*********************************************************/
+
+
+///////////////////////////////////////////////
+// Word/byte conversion
+
+void ConvertBW32(uint8_t bytes[], uint32_t words[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount / 4; i++) {
+    words[i] = (uint32_t)bytes[j] | ((uint32_t)bytes[j + 1] << 8) | ((uint32_t)bytes[j + 2] << 16) | ((uint32_t)bytes[j + 3] << 24);
+    j += 4;
+  }
+}
+
+void ConvertW32B(uint32_t words[], uint8_t bytes[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount; i++) {
+    bytes[j] = (uint8_t)words[i];
+    bytes[j + 1] = (uint8_t)(words[i] >> 8);
+    bytes[j + 2] = (uint8_t)(words[i] >> 16);
+    bytes[j + 3] = (uint8_t)(words[i] >> 24);
+    j += 4;
+  }
+}
+
+void ConvertW64B(uint64_t words[], uint8_t bytes[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount; i++) {
+    bytes[j] = (uint8_t)words[i];
+    bytes[j + 1] = (uint8_t)(words[i] >> 8);
+    bytes[j + 2] = (uint8_t)(words[i] >> 16);
+    bytes[j + 3] = (uint8_t)(words[i] >> 24);
+    bytes[j + 4] = (uint8_t)(words[i] >> 32);
+    bytes[j + 5] = (uint8_t)(words[i] >> 40);
+    bytes[j + 6] = (uint8_t)(words[i] >> 48);
+    bytes[j + 7] = (uint8_t)(words[i] >> 56);
+    j += 8;
+  }
+}
+
+void ConvertBW64(uint8_t bytes[], uint64_t words[], int wordcount) {
+  int i, j = 0;
+  for (i = 0; i < wordcount / 8; i++) {
+    words[i] = (uint8_t)bytes[j] | ((uint8_t)bytes[j + 1] << 8) | ((uint8_t)bytes[j + 2] << 16) | ((uint8_t)bytes[j + 3] << 24) | ((uint8_t)bytes[j + 4] << 32) | ((uint8_t)bytes[j + 5] << 40) | ((uint8_t)bytes[j + 6] << 48) | ((uint8_t)bytes[j + 7] << 56);
+    j += 8;
+  }
+}
+
+///////////////////////////////////////////////
+// Key Schedule
+
+void Expand64Block64(uint32_t K[], uint32_t roundkey[]) {
+  static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+  for (i = 0; i < 22;) {
+    roundkey[i] = A;
+    EncryptRound32(B, A, i++);
+    roundkey[i] = A;
+    EncryptRound32(C, A, i++);
+    roundkey[i] = A;
+    EncryptRound32(D, A, i++);
+  }
+}
+
+void Expand128Block64(uint32_t K[], uint32_t roundkey[]) {
+  static uint32_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+  for (i = 0; i < 27;) {
+    roundkey[i] = A;
+    EncryptRound32(B, A, i++);
+    roundkey[i] = A;
+    EncryptRound32(C, A, i++);
+    roundkey[i] = A;
+    EncryptRound32(D, A, i++);
+  }
+}
+
+void Expand128Block128(uint64_t K[], uint64_t roundkey[]) {
+  static uint64_t i, B = K[1], A = K[0];
+
+  for (i = 0; i < 31;) {
+    roundkey[i] = A;
+    EncryptRound64(B, A, i++);
+  }
+  roundkey[i] = A;
+}
+
+void Expand256Block128(uint64_t K[], uint64_t roundkey[]) {
+  static uint64_t i, D = K[3], C = K[2], B = K[1], A = K[0];
+
+  for (i = 0; i < 33;) {
+    roundkey[i] = A;
+    EncryptRound64(B, A, i++);
+    roundkey[i] = A;
+    EncryptRound64(C, A, i++);
+    roundkey[i] = A;
+    EncryptRound64(D, A, i++);
+  }
+  roundkey[i] = A;
+}
+
+///////////////////////////////////////////////
+// Encrypt
+
+void Block32Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundkey[]) {
+  uint16_t i;
+
+  ciphertext[0] = plaintext[0];
+  ciphertext[1] = plaintext[1];
+  for (i = 0; i < 22;) {
+    EncryptRound16(ciphertext[1], ciphertext[0], roundkey[i++]);
+  }
+}
+
+void Block64Encrypt(uint32_t plaintext[], uint32_t ciphertext[], uint32_t roundkey[]) {
+  uint16_t i;
+
+  ciphertext[0] = plaintext[0];
+  ciphertext[1] = plaintext[1];
+  for (i = 0; i < 27;) {
+    EncryptRound32(ciphertext[1], ciphertext[0], roundkey[i++]);
+  }
+}
+
+void Block128Encrypt(uint64_t plaintext[], uint64_t ciphertext[], uint64_t roundkey[]) {
+  uint16_t i;
+
+  ciphertext[0] = plaintext[0];
+  ciphertext[1] = plaintext[1];
+  for (i = 0; i < 32;) {
+    EncryptRound64(ciphertext[1], ciphertext[0], roundkey[i++]);
+  }
+}
+
+void Block256Encrypt(uint64_t plaintext[], uint64_t ciphertext[], uint64_t roundkey[]) {
+  uint16_t i;
+  
+  ciphertext[0] = plaintext[0];
+  ciphertext[1] = plaintext[1];
+  for (i = 0; i < 34;) {
+    EncryptRound64(ciphertext[1], ciphertext[0], roundkey[i++]);
+  }
+}
+
+void setup() {
+  pinMode(DATA_PROCESS_PIN, OUTPUT);
+  pinMode(DATA_TRANSMIT_PIN, OUTPUT);
+  pinMode(DATA_RECEIVE_PIN, OUTPUT);
+
+  Serial.begin(115200);
+
+  if (!test) {
+    if (!LoRa.begin(frequency)) {
+      Serial.println("Failed initializing LoRa connection...");
+      while (1);
+    }
+  }
+
+  // set coding rate
+  LoRa.setCodingRate4(5);
+  // set preamble length
+  LoRa.setPreambleLength(10);          // change after debugging
+  // enable crc
+  LoRa.enableCrc();
+  // define spreading factor
+
+  // setup callback for onReceive - the callback will be triggered by an interrupt on _dio0 which calls onDio0Rise -> handleDio0Rise -> _onReceive
+  //LoRa.onReceive(onReceive);
+  // setup callback for onTxDone such that it can be put in receive mode af transmitting
+  LoRa.onTxDone(onTxDone);
+
+  LoRa.onReceive(onReceive);
+
+  if (!test) {
+    LoRa.idle();                          // set standby mode
+    LoRa.disableInvertIQ();               // normal mode
+  }
+
+  delay(500);
+
+  transmitMessage(true);      // send nonce to server and derive secret key
+
+}
+
+void loop() {
+  t3 = millis();
+  digitalWrite(DATA_PROCESS_PIN, HIGH);                                                                   // [START] Data processing
+  transmitMessage(false);
+
+  delay(t6);
+
+
+  digitalWrite(DATA_RECEIVE_PIN, LOW);                                                                    // [STOP] Wait for incoming data
+
+  LoRa.disableInvertIQ();
+  LoRa.idle();
+  LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
+}
