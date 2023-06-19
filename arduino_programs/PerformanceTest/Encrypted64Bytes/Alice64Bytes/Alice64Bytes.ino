@@ -274,7 +274,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload[64];             // CHANGED
+  uint16_t payload[32];             // CHANGED
   uint8_t mic[4];
 
   if (firstNonce) {
@@ -294,7 +294,7 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, secretKey, 16, micInput, 67);
     //mic = getMIC(payload, key);
   } else {
-    uint16_t tempPayload[64];       // CHANGED
+    uint16_t tempPayload[32];       // CHANGED
     getPayload(tempPayload);
 
     getCiphertext(tempPayload, payload);                                                                      // TURN ENCRYPTION ON or OFF
