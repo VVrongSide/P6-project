@@ -292,11 +292,15 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, rootKey, 16, micInput, 5);
     //mic = getMIC(payload, key);
   } else {
-    getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
 
-    //payload = getCiphertext(payload); 
-    //getCiphertext(payload);                                                                               // TURN ENCRYPTION ON or OFF
-
+    payload = getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
+    Serial.print("Plaintext: ");
+    Serial.println(payload);
+    
+    payload = getCiphertext(payload);  // TURN ENCRYPTION ON or OFF
+    
+                                                                                 
+   
     uint8_t micInput[5] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 5);
   }
@@ -331,8 +335,10 @@ uint16_t getPayload() {                                                         
   //return (uint16_t)random(65535);
 }
 */
-void getPayload(uint16_t payload) {                                                             ///////////////////////////////////////CHECK
-  payload = 43690;             // equivalent to 1010101010101010
+uint16_t getPayload(uint16_t payload) {                                                             ///////////////////////////////////////CHECK
+  payload = 43690;
+  return payload;
+  // equivalent to 1010101010101010
   //return (uint16_t)random(65535);
 }
 
@@ -340,27 +346,39 @@ uint16_t getFirstNonce() {
   return 42069;
   //return (uint16_t)random(65535);
 }
-/*
-uint16_t getCiphertext(uint16_t payload) {
 
+uint16_t getCiphertext(uint16_t payload) {
+  
   uint32_t msgKey = getMsgKey();
   uint16_t msgKey16 = (uint16_t)msgKey;
 
   uint16_t ciphertext = payload ^ msgKey16;
+  
+  Serial.print("Full msg Key: ");
+  Serial.println(msgKey);
+  
+  Serial.print("msg key16: ");
+  Serial.println(msgKey16);
+
+  Serial.print("Ciphertext: ");
+  Serial.println(ciphertext);
 
   return ciphertext;
 }
-*/
+/*
 void getCiphertext(uint16_t payload) {
 
-  uint32_t msgKey = getMsgKey();
+  //uint32_t msgKey = getMsgKey();
+  uint32_t msgKey;
+  getMsgKey(msgKey);
+  
   //uint16_t msgKey16 = (uint16_t)msgKey;
 
   payload = payload ^ (uint16_t)msgKey;
 }
-
+*/
 uint32_t getMsgKey() {
-
+ 
   uint8_t plaintext[4];
   uint32_t plaintextword[1];
   uint8_t ciphertext[4];
@@ -378,6 +396,8 @@ uint32_t getMsgKey() {
 
   uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
                     ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];
+  
+
   return msgKey;
 }
 
