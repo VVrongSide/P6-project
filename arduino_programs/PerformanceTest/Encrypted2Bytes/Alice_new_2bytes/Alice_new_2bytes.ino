@@ -261,7 +261,7 @@ void onReceive(int packetSize) {
   for (int i = 0; i < packetSize; i++) {
     Serial.print((char)LoRa.read());
   }
-  Serial.println();
+//  Serial.println();
 }
 
 void transmitMessage(bool firstNonce) {
@@ -272,18 +272,18 @@ void transmitMessage(bool firstNonce) {
   uint8_t header_b2 = (deviceAddress << 4) | (sequenceNumber >> 8);
   uint8_t header_b3 = sequenceNumber;
 
-  uint16_t payload;
+  uint16_t payload[1];
   uint8_t mic[4];
 
   if (firstNonce) {
-    payload = getFirstNonce();
+    getFirstNonce(payload);
 
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
       key[i] = rootKey[i];
     }
     uint8_t longNonce[8];
-    uint8_t nonceInput[2] = {(uint8_t)(payload >> 8), (uint8_t)payload};
+    uint8_t nonceInput[2] = {(uint8_t)(payload[0] >> 8), (uint8_t)payload[0]};
     blake2s(&longNonce, 8, rootKey, 16, nonceInput, 2);
     deriveSecretKey(longNonce);
     //deriveSecretKey(blakePlaceholder(payload));
@@ -293,11 +293,11 @@ void transmitMessage(bool firstNonce) {
     //mic = getMIC(payload, key);
   } else {
 
-    payload = getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
-    Serial.print("Plaintext: ");
-    Serial.println(payload);
+    getPayload(payload);                                                                                         /////////////////////////////////////////// CHECK
+    //Serial.print("Plaintext: ");
+    //Serial.print(payload[0]);
     
-    payload = getCiphertext(payload);  // TURN ENCRYPTION ON or OFF
+    getCiphertext(payload);  // TURN ENCRYPTION ON or OFF
     
                                                                                  
    
@@ -305,8 +305,8 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, secretKey, 8, micInput, 5);
   }
 
-  uint8_t payload_b1 = payload >> 8;
-  uint8_t payload_b2 = payload;
+  uint8_t payload_b1 = payload[0] >> 8;
+  uint8_t payload_b2 = payload[0];
 
   digitalWrite(DATA_PROCESS_PIN, LOW);                                                                  // [STOP] Data processing
   t4 = millis();
@@ -335,35 +335,33 @@ uint16_t getPayload() {                                                         
   //return (uint16_t)random(65535);
 }
 */
-uint16_t getPayload(uint16_t payload) {                                                             ///////////////////////////////////////CHECK
-  payload = 43690;
-  return payload;
+uint16_t getPayload(uint16_t payload[]) {                                                             ///////////////////////////////////////CHECK
+  payload[0] = 43690;
   // equivalent to 1010101010101010
   //return (uint16_t)random(65535);
 }
 
-uint16_t getFirstNonce() {
-  return 42069;
+void getFirstNonce(uint16_t payload[]) {
+  payload[0] = 42069;
   //return (uint16_t)random(65535);
 }
 
-uint16_t getCiphertext(uint16_t payload) {
+void getCiphertext(uint16_t payload[]) {
   
-  uint32_t msgKey = getMsgKey();
-  uint16_t msgKey16 = (uint16_t)msgKey;
+  uint32_t msgKey[1];
+  getMsgKey(msgKey);
+  uint16_t msgKey16 = (uint16_t)msgKey[0];
 
-  uint16_t ciphertext = payload ^ msgKey16;
+  payload[0] = payload[0] ^ msgKey16;
   
-  Serial.print("Full msg Key: ");
-  Serial.println(msgKey);
-  
-  Serial.print("msg key16: ");
-  Serial.println(msgKey16);
-
-  Serial.print("Ciphertext: ");
-  Serial.println(ciphertext);
-
-  return ciphertext;
+//  Serial.print("Full msg Key: ");
+//  Serial.println(msgKey[0]);
+//  
+//  Serial.print("msg key16: ");
+//  Serial.println(msgKey16);
+//
+//  Serial.print("Ciphertext: ");
+//  Serial.println(payload[0]);
 }
 /*
 void getCiphertext(uint16_t payload) {
@@ -377,7 +375,7 @@ void getCiphertext(uint16_t payload) {
   payload = payload ^ (uint16_t)msgKey;
 }
 */
-uint32_t getMsgKey() {
+void getMsgKey(uint32_t msgKey[]) {
  
   uint8_t plaintext[4];
   uint32_t plaintextword[1];
@@ -394,11 +392,9 @@ uint32_t getMsgKey() {
   Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
   ConvertW32B(ciphertextword, ciphertext, 1);
 
-  uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
+  msgKey[0] = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
                     ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];
   
-
-  return msgKey;
 }
 
 void deriveSecretKey(uint8_t nonce[]) {

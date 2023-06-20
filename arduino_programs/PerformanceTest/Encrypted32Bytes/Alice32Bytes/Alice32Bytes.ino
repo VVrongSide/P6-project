@@ -277,7 +277,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t mic[4];
 
   if (firstNonce) {
-    payload[0] = getFirstNonce();
+    getFirstNonce(payload);
 
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
@@ -293,10 +293,20 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, secretKey, 16, micInput, 35);
     //mic = getMIC(payload, key);
   } else {
-    uint16_t tempPayload[16];       // CHANGED
-    getPayload(tempPayload);
+    
+    getPayload(payload);
+//    Serial.print("Plaintext: ");
+//    Serial.print(payload[0]);
+//    Serial.print(payload[1]);
+//    Serial.print(payload[2]);
+//    Serial.println(payload[3]);
 
-    //getCiphertext(tempPayload, payload);                                                                      // TURN ENCRYPTION ON or OFF
+    //getCiphertext(payload);                                                                      // TURN ENCRYPTION ON or OFF
+//    Serial.print("Ciphertext:");
+//    Serial.print(payload[0]);
+//    Serial.print(payload[1]);
+//    Serial.print(payload[2]);
+//    Serial.println(payload[3]);
 
     uint8_t micInput[35] = {header_b1, header_b2, header_b3, (uint8_t)payload >> 248, (uint8_t)payload >> 240, (uint8_t)payload >> 232, (uint8_t)payload >> 224, (uint8_t)payload >> 216, (uint8_t)payload >> 208, (uint8_t)payload >> 200, (uint8_t)payload >> 192, (uint8_t)payload >> 184, (uint8_t)payload >> 176, (uint8_t)payload >> 168, (uint8_t)payload >> 160, (uint8_t)payload >> 152, (uint8_t)payload >> 144, (uint8_t)payload >> 136, (uint8_t)payload >> 128, (uint8_t)payload >> 120, (uint8_t)payload >> 112, (uint8_t)payload >> 104, (uint8_t)payload >> 96, (uint8_t)payload >> 88, (uint8_t)payload >> 80, (uint8_t)payload >> 72, (uint8_t)payload >> 64, (uint8_t)payload >> 56, (uint8_t)payload >> 48, (uint8_t)payload >> 40, (uint8_t)payload >> 32, (uint8_t)payload >> 24, (uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 16, micInput, 35);
@@ -392,36 +402,38 @@ void getPayload(uint16_t payload[]) {
   }
 }
 
-uint16_t getFirstNonce() {
-  return 42069;
+uint16_t getFirstNonce(uint16_t payload[]) {
+  payload[0] = 42069;
 }
 
 
-void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
+void getCiphertext(uint16_t payload[]) {
 
   uint64_t msgKey[2];
 
   getMsgKey(msgKey);
+//  Serial.print("msgkey: ");
+//  Serial.println(uint32_t(msgKey[0]));
 
-  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey[0] >> 48);
-  ciphertext[1] = payload[1] ^ (uint16_t)(msgKey[0] >> 32);
-  ciphertext[2] = payload[2] ^ (uint16_t)(msgKey[0] >> 16);
-  ciphertext[3] = payload[3] ^ (uint16_t)msgKey[0];
-  ciphertext[4] = payload[4] ^ (uint16_t)(msgKey[1] >> 48);
-  ciphertext[5] = payload[5] ^ (uint16_t)(msgKey[1] >> 32);
-  ciphertext[6] = payload[6] ^ (uint16_t)(msgKey[1] >> 16);
-  ciphertext[7] = payload[7] ^ (uint16_t)msgKey[1];
+  payload[0] = payload[0] ^ (uint16_t)(msgKey[0] >> 48);
+  payload[1] = payload[1] ^ (uint16_t)(msgKey[0] >> 32);
+  payload[2] = payload[2] ^ (uint16_t)(msgKey[0] >> 16);
+  payload[3] = payload[3] ^ (uint16_t)msgKey[0];
+  payload[4] = payload[4] ^ (uint16_t)(msgKey[1] >> 48);
+  payload[5] = payload[5] ^ (uint16_t)(msgKey[1] >> 32);
+  payload[6] = payload[6] ^ (uint16_t)(msgKey[1] >> 16);
+  payload[7] = payload[7] ^ (uint16_t)msgKey[1];
 
   getMsgKey(msgKey);                                                    // CHANGED : this is the same key as before but we do it again to "simulate" a longer key generation
 
-  ciphertext[8] = payload[8] ^   (uint16_t)(msgKey[0] >> 48);
-  ciphertext[9] = payload[9] ^   (uint16_t)(msgKey[0] >> 32);
-  ciphertext[10] = payload[10] ^ (uint16_t)(msgKey[0] >> 16);
-  ciphertext[11] = payload[11] ^ (uint16_t)msgKey[0];
-  ciphertext[12] = payload[12] ^ (uint16_t)(msgKey[1] >> 48);
-  ciphertext[13] = payload[13] ^ (uint16_t)(msgKey[1] >> 32);
-  ciphertext[14] = payload[14] ^ (uint16_t)(msgKey[1] >> 16);
-  ciphertext[15] = payload[15] ^ (uint16_t)msgKey[1];
+  payload[8] = payload[8] ^   (uint16_t)(msgKey[0] >> 48);
+  payload[9] = payload[9] ^   (uint16_t)(msgKey[0] >> 32);
+  payload[10] = payload[10] ^ (uint16_t)(msgKey[0] >> 16);
+  payload[11] = payload[11] ^ (uint16_t)msgKey[0];
+  payload[12] = payload[12] ^ (uint16_t)(msgKey[1] >> 48);
+  payload[13] = payload[13] ^ (uint16_t)(msgKey[1] >> 32);
+  payload[14] = payload[14] ^ (uint16_t)(msgKey[1] >> 16);
+  payload[15] = payload[15] ^ (uint16_t)msgKey[1];
   
 }
 

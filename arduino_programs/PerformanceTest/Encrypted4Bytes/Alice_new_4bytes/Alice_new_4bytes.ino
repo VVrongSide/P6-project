@@ -277,7 +277,7 @@ void transmitMessage(bool firstNonce) {
   uint8_t mic[4];
 
   if (firstNonce) {
-    payload[0] = getFirstNonce();
+    getFirstNonce(payload);
 
     uint8_t key[8];
     for (int i = 0; i < 8; i++) {
@@ -293,10 +293,16 @@ void transmitMessage(bool firstNonce) {
     blake2s(mic, 4, rootKey, 16, micInput, 7);
     //mic = getMIC(payload, key);
   } else {
-    uint16_t tempPayload[2];
-    getPayload(tempPayload);
-
-    //getCiphertext(tempPayload, payload);                                                                  // TURN ENCRYPTION ON or OFF
+    
+    getPayload(payload);
+//    Serial.print("Plaintext: ");
+//    Serial.print(payload[0]);
+//    Serial.println(payload[1]);
+    
+    //getCiphertext(payload);                // TURN ENCRYPTION ON or OFF
+//    Serial.print("Ciphertext:");
+//    Serial.print(payload[0]);
+//    Serial.println(payload[1]);
 
     uint8_t micInput[7] = {header_b1, header_b2, header_b3,(uint8_t)payload >> 24,(uint8_t)payload >> 16, (uint8_t)payload >> 8, (uint8_t)payload};
     blake2s(mic, 4, secretKey, 8, micInput, 7);
@@ -333,23 +339,26 @@ void transmitMessage(bool firstNonce) {
 void getPayload(uint16_t payload[]) {
   for (int i = 0; i < 2; i++) {
     payload[i] = 43690;                     // equivalent to 1010101010101010
+    //Serial.println(payload[i]);
   } 
 }
 
-uint16_t getFirstNonce() {
-  return 42069;
+uint16_t getFirstNonce(uint16_t payload[]) {
+  payload[0] = 42069;
 }
 
 
-void getCiphertext(uint16_t payload[], uint16_t ciphertext[]) {
+void getCiphertext(uint16_t ciphertext[]) {
+  uint32_t msgKey[1];
+  getMsgKey(msgKey);
+//  Serial.print("msgkey: ");
+//  Serial.println(msgKey[0]);
 
-  uint32_t msgKey = getMsgKey();
-
-  ciphertext[0] = payload[0] ^ (uint16_t)(msgKey >> 16);
-  ciphertext[1] = payload[1] ^ (uint16_t)msgKey; 
+  ciphertext[0] = ciphertext[0] ^ (uint16_t)(msgKey[0] >> 16);
+  ciphertext[1] = ciphertext[1] ^ (uint16_t)msgKey[0]; 
 }
 
-uint32_t getMsgKey() {
+uint32_t getMsgKey(uint32_t msgKey[]) {
 
   uint8_t plaintext[4];
   uint32_t plaintextword[1];
@@ -366,9 +375,8 @@ uint32_t getMsgKey() {
   Block32Encrypt(plaintextword, ciphertextword, roundkey);  // input: uint32 arrays // output: uint32 array
   ConvertW32B(ciphertextword, ciphertext, 1);
 
-  uint32_t msgKey = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
+  msgKey[0] = ((uint32_t)ciphertext[0] << 24) | ((uint32_t)ciphertext[1] << 16) |
                     ((uint32_t)ciphertext[2] << 8) | (uint32_t)ciphertext[3];
-  return msgKey;
 }
 
 void deriveSecretKey(uint8_t nonce[]) {
